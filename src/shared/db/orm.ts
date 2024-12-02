@@ -4,9 +4,9 @@ import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 export const orm = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
-    dbName: 'libertant',
+    dbName: 'libertant2',
     type: 'mysql',
-    clientUrl: 'mysql://nachin:ik12345ik@localhost:3306/libertant', // mysql://username:password@localhost:3306/your_database_name
+    clientUrl: 'mysql://admin:admin@localhost:3306/libertant2', // mysql://username:password@localhost:3306/your_database_name
     highlighter: new SqlHighlighter(),
     debug: true,
     /*

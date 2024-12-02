@@ -27,10 +27,10 @@ async function logIn(req: Request, res: Response){
         const cod_administrador = Number.parseInt(req.body.cod_administrador) 
         const elAdmin = await em.findOneOrFail(Administrador, { cod_administrador })
         if(elAdmin.contrasenia === req.body.contrasenia){
-            if(elAdmin.cod_administrador === 11){
-                res.status(202).json({ status: 202} )
+            if(elAdmin.cod_administrador <= 10){
+                res.status(202).json({ status: 202, tipo_usuario:"Administrador"} )
             } else {
-                res.status(201).json({  status: 202 } )
+                res.status(202).json({ status: 202, tipo_usuario:"Normal" } )
             }
         } else {
             res.status(401).json({ status: 401} )
@@ -51,6 +51,7 @@ async function getAll(req:Request, res:Response){
 
 async function getOne(req: Request, res: Response){
     try {
+        console.log(req.params.cod_administrador)
         const cod_administrador =  Number.parseInt(req.params.cod_administrador) 
         const elGuardia = await em.findOne(Administrador, { cod_administrador })
         res.status(201).json({  status: 201, data: elGuardia } )

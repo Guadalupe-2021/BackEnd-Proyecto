@@ -1,6 +1,7 @@
 //librerias y modulos
 import 'reflect-metadata'
 import express from 'express'
+import cors from 'cors'
 import { orm, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
 import { guardiaRouter } from './guardiaDir/guardia.routes.js'
@@ -19,6 +20,9 @@ import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.rout
 
 //misc
 const app = express()
+
+app.use(cors())
+
 app.use(express.json())
 
 app.use((req, res, next) => {
