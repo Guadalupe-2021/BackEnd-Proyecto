@@ -36,11 +36,24 @@ async function getOne(req: Request, res: Response){
 async function getCeldas(req: Request, res: Response){
     try {
         const cod_sector =  Number.parseInt(req.params.cod_sector) 
-        const lasCeldas = await em.getConnection().execute(`
+        const lasCeldas:string = await em.getConnection().execute(`
             select *
             from celda
             where cod_sector_cod_sector = ?;`, [cod_sector])
         res.status(201).json({ status: 201, data: lasCeldas} )
+    } catch (error: any){
+        res.status(404).json({status: 404 })
+    }
+}
+
+async function getTurnos(req: Request, res: Response){
+    try {
+        const cod_sector =  Number.parseInt(req.params.cod_sector) 
+        const losTurnos:string = await em.getConnection().execute(`
+            select *
+            from turno
+            where cod_sector_cod_sector = ?;`, [cod_sector])
+        res.status(201).json({ status: 201, data: losTurnos} )
     } catch (error: any){
         res.status(404).json({status: 404 })
     }
@@ -65,4 +78,4 @@ async function agregar_sentencia_a_sector(req : Request, res : Response){
 }
 
 
-export { getAll, getSome, getOne, getCeldas, agregar_sentencia_a_sector }
+export { getAll, getSome, getOne, getCeldas, getTurnos, agregar_sentencia_a_sector }
