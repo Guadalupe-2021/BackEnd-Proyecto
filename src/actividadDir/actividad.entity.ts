@@ -17,22 +17,22 @@ export class Actividad {
     locacion !: string
 
     @Property({ nullable: false})
-    diaDeLaSemana !: number  // no vamos a guardar el nombre del dia de la semana, hay que transformarlo siempre y no tiene sentido. pero si vamos a mantener el numero
+    dia_de_la_semana !: number  // no vamos a guardar el nombre del dia de la semana, hay que transformarlo siempre y no tiene sentido. pero si vamos a mantener el numero
     
     @Property({ nullable: false})
-    horaInicio !: number
+    hora_inicio !: number
 
     @Property({ nullable: false})
-    horaFin !: number
+    hora_fin !: number
 
     @Property({nullable: false})
     estado !: 1
 
     @Property({nullable: false})
-    cantidadMinima !: number
+    cantidad_minima !: number
 
     @Property({nullable: false})
-    edadMinima !: number
+    edad_minima !: number
 
     @ManyToOne(() => Sector, { nullable: false })
     cod_sector !: Rel<Sector>

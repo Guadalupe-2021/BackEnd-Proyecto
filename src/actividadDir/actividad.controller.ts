@@ -29,10 +29,10 @@ function sanitizarInputDeActividad(req : Request, res : Response, next: NextFunc
 
 async function getAll(req:Request, res:Response){
     try{
-        const actividades = await em.getConnection().execute(`select * from actividad act where act.estado = 1;`);
-        res.status(201).json({ message: 'las actividades:', data: actividades})
+        const actividades = await em.find(Actividad, {estado:1});
+        res.status(201).json({ status: 201 , data : actividades})
     } catch (error: any) {
-        res.status(404).json({ message: 'error'})
+        res.status(404).json({ status: 404})
     }
 }
 
