@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
+import { Condena } from "../condenaDir/condena.entity.js"
 
 const em = orm.em
 em.getRepository(Recluso)
@@ -23,7 +24,7 @@ function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction
 async function getAll(req:Request, res:Response){
     try{
         const reclusos = await em.find(Recluso, {})
-        res.status(201).json({ status: 201, data: reclusos})
+        res.status(201).json(reclusos)
     } catch (error: any) {
         res.status(404).json({ status: 404 })
     }
@@ -40,10 +41,12 @@ async function getSome(req : Request, res : Response){
 
 async function getOne(req: Request, res: Response){
     try {
-        const rec = await em.getConnection().execute(`select * from recluso rec where rec.dni = ?;`, [req.params.dni]);
-        console.log(rec[0])
-        if(rec[0] !== undefined){
-            res.status(201).json({ status: 201, data: rec[0] } )
+    if(!(req.params.id.indexOf(".")))throw Error
+    const id_recluso = Number(req.params.id)
+    if((id_recluso % 1 != 0)) throw Error  // error si es decimal
+    const recluso = (id_recluso>9999999) ? await em.findOne(Recluso, {dni:id_recluso}) : await em.findOne(Recluso, {cod_recluso:id_recluso});
+    if(recluso !== null){
+            res.status(201).json(recluso)
         }else{
             res.status(404).json({ status: 404 })
         }
@@ -52,22 +55,24 @@ async function getOne(req: Request, res: Response){
     }
 }
 
-async function add(req: Request, res: Response){
+async function postOneRecluso(req: Request, res: Response){
     try{
-        const rec = await em.getConnection().execute(`select * from recluso rec where rec.dni = ?;`, [req.body.dni]);
-        if(rec[0] === undefined){
-            const elRecluso = await em.create(Recluso, req.body)
-            await em.flush()
-            res.status(201).json({ status: 201, data: elRecluso.cod_recluso })
+        const recluso = await em.find(Recluso,{dni:req.body.dni})
+        if(recluso===null){
+           // const elRecluso = await em.create(Recluso, req.body)
+           // await em.flush()
+           // res.status(201).json({ status: 201, data: elRecluso.cod_recluso })
         }else{
             const condena_si_o_no = await em.getConnection().execute(`select count(*) cont 
                                                                     from condena c
                                                                     inner join recluso r on c.cod_recluso_cod_recluso = r.cod_recluso
                                                                     where dni = ? and c.fecha_fin_real is null;`, [req.body.dni]);
-            if(condena_si_o_no[0].cont === 0){
-                res.status(201).json({  status: 202, data: rec[0].cod_recluso})
+            
+            const condenas = await em.find(Condena,{cod_recluso:req.body.cod_recluso,fecha_fin_real:null})                                                            
+            if(condenas != null){
+                res.status(201).json({  status: 202, data: recluso})
             } else {
-                res.status(201).json({  status: 203, data: rec[0].cod_recluso})
+                res.status(201).json({  status: 203, data: recluso})
             }
         }
     } catch (error: any) {
@@ -75,4 +80,4 @@ async function add(req: Request, res: Response){
     }
 }
 
-export { getAll, getSome, getOne, add, sanitizarInputDeRecluso }
+export { getAll, getSome, getOne, postOneRecluso, sanitizarInputDeRecluso }

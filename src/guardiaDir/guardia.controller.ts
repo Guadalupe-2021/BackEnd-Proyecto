@@ -7,25 +7,28 @@ em.getRepository(Guardia)
 
 async function getAll(req:Request, res:Response){
     try{
-        const guardias = await em.getConnection().execute(`select * from guardia guar where guar.fecha_fin_contrato is null;`);
-        res.status(201).json({ status: 201, data: guardias})
+        const guardias = await em.find(Guardia,{})
+        if(guardias!==null)res.status(200).json(guardias)
+        if(guardias===null)res.status(404).json({status:404, message:"Not Found"})
     } catch (error: any) {
-        res.status(404).json({status: 500})
+        res.status(500).json({status: 500})
     }
 }
 
 async function getOne(req: Request, res: Response){
     try {
-        const dni =  Number.parseInt(req.params.dni) 
-        const elGuardia = await em.getConnection().execute(`select * from guardia gua where gua.dni = ?;`, [dni]);
-        if(elGuardia[0] !== undefined){
-            res.status(201).json({ status: 201, data: elGuardia[0] } )
-        } else {
+    if(!(req.params.id.indexOf(".")))throw Error
+    const id_guardia = Number(req.params.id)
+    if((id_guardia % 1 != 0)) throw Error  // error si es decimal
+
+const guardia = (id_guardia>9999999) ? await em.findOne(Guardia, {dni:id_guardia}) : await em.findOne(Guardia, {cod_guardia:id_guardia});
+    if(guardia !== null){
+            res.status(201).json(guardia)
+        }else{
             res.status(404).json({ status: 404 })
         }
-
     } catch (error: any){
-        res.status(404).json({ status: 404 })
+        res.status(500).json({ status: 500, message: error.message})
     }
 }
 
@@ -57,11 +60,15 @@ async function add(req: Request, res: Response){
     }
 }
 
+async function putGuardia(){
+// NO IMPLEMENTADO
+}
+
 async function finalizarContrato(req: Request, res: Response){
     try{
         const cod_guardia =  Number.parseInt(req.body.cod_guardia)
         const elGuardia = await em.findOneOrFail(Guardia, { cod_guardia })
-        if(elGuardia.fechaFinContrato === null){
+        if(elGuardia.fecha_fin_contrato === null){
             const today = new Date();
             const day = today.getDate();
             const month = today.getMonth() + 1;
@@ -78,7 +85,7 @@ async function finalizarContrato(req: Request, res: Response){
     }
 }
 
-export { getAll, getOne, add, finalizarContrato}
+export { getAll, getOne, add, finalizarContrato,putGuardia}
 
 
 

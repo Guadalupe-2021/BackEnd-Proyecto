@@ -15,8 +15,8 @@ export class Guardia {
     dni !: number
 
     @Property({ nullable: false})
-    fechaIniContrato !: Date
+    fecha_ini_contrato !: Date
 
     @Property({ nullable: true})
-    fechaFinContrato ?: Date
+    fecha_fin_contrato ?: Date
 }   

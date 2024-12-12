@@ -64,7 +64,13 @@ Content-Type: application/json
 GET http://localhost:8080/reclusos
 
 ### get reclusos
-GET http://localhost:8080/reclusos/45655988
+//GET http://localhost:8080/reclusos/45655988
+
+
+//GET http://localhost:8080/reclusos/11111111
+
+GET http://localhost:8080/reclusos/1
+
 
 ### POST a recluso
 POST http://localhost:8080/reclusos

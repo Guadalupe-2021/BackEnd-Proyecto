@@ -24,10 +24,11 @@ function sanitizarInputDeSentencia(req : Request, res : Response, next: NextFunc
 
 async function getAll(req : Request, res : Response){
     try{
-        const sentencias = await em.getConnection().execute(`select * from sentencia s order by orden_de_gravedad desc;`);
-        res.status(201).json({ data: sentencias})
+        const sentencias = await em.find(Sentencia,{})                         
+        if(sentencias!==null)res.status(201).json(sentencias)
+        if(sentencias===null)res.status(404).json({ status: 404,message: "Not Found"})
     } catch (error: any) {
-        res.status(404).json({ message: 'error'})
+        res.status(500).json({ status: 500,message: 'Error Fatal'})
     }
 }
  
