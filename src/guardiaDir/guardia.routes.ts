@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { getAll, getOne, add, finalizarContrato,putGuardia} from "./guardia.controller.js";
+import { getAll, getOne, addOne, putGuardia,guardiaSanitizer} from "./guardia.controller.js";
 
 export const guardiaRouter = Router()
 
 guardiaRouter.get('/', getAll)
 guardiaRouter.get('/:id', getOne)
-guardiaRouter.post('/', add)
-guardiaRouter.post('/id:/modificar', putGuardia)
-guardiaRouter.put('/finalizarContrato', finalizarContrato)
+guardiaRouter.post('/',guardiaSanitizer ,addOne)
+guardiaRouter.put('/:id/modificar',guardiaSanitizer ,putGuardia)
 

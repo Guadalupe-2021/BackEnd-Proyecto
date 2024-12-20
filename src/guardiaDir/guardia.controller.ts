@@ -5,6 +5,29 @@ import { Guardia } from "./guardia.entity.js"
 const em = orm.em
 em.getRepository(Guardia)
 
+async function guardiaSanitizer(req:Request,res:Response,next:NextFunction){
+req.body.sanitizedInputGuardia = {
+     nombre: req.body.nombre,
+     apellido: req.body.apellido,
+     dni: req.body.dni,
+     fecha_ini_contrato: req.body.fecha_ini_contrato,
+     fecha_fin_contrato: req.body.fecha_fin_contrato,
+     }
+       //more checks here
+     //Number(req.body.dni)
+     //new Date(req.body.fecha_ini_contrato)
+     //new Date(req.body.fecha_fin_contrato)
+
+
+  //Object.keys(req.body.sanitizedInput).forEach((key) => {
+  //  if (req.body.sanitizedInput[key] === undefined) {
+  //    delete req.body.sanitizedInput[key]
+  //  }
+  //})
+  next()
+}
+
+
 async function getAll(req:Request, res:Response){
     try{
         const guardias = await em.find(Guardia,{})
@@ -32,60 +55,36 @@ const guardia = (id_guardia>9999999) ? await em.findOne(Guardia, {dni:id_guardia
     }
 }
 
-async function add(req: Request, res: Response){
+async function addOne(req: Request, res: Response){
     try{
-        const si_o_no = await em.getConnection().execute(`select * from guardia gua where gua.dni = ?;`, [req.body.dni]);
-
-        if(si_o_no.length === 0){
-            const elGuardia = await em.create(Guardia, req.body) 
+        const guardia = await em.findOne(Guardia, {dni:req.body.dni});
+        if(guardia === null){
+            em.create(Guardia, req.body.sanitizedInputGuardia) 
             await em.flush()
             res.status(201).json({ status: 201 })
         } else {
-            if(si_o_no[0].fecha_fin_contrato === null){
-                res.status(404).json({status: 404})
-            } else {
-                const today = new Date();
-                const day = today.getDate();
-                const month = today.getMonth() + 1;
-                let year = today.getFullYear();
-                let finalDate = `${year}-${month}-${day}`
-                let modif1 = await em.getConnection().execute(`update guardia set fecha_ini_contrato = ? where dni = ?;`, [finalDate, req.body.dni]);
-                let modif2 = await em.getConnection().execute(`update guardia set fecha_fin_contrato = null where dni = ?;`, [req.body.dni]);
-                let modif3 = await em.getConnection().execute(`update turno set fecha_fin = ? where cod_guardia_cod_guardia = ?;`, [finalDate, si_o_no[0].cod_guardia]);
-                res.status(202).json({status: 202})
-            } 
+            res.status(409).json({status: 409, message:"ERROR: El Guardia Ya Existe"})
         }
     } catch (error: any) {
         res.status(500).json({message : error.message})
     }
 }
 
-async function putGuardia(){
-// NO IMPLEMENTADO
+async function putGuardia(req: Request, res: Response){
+    try {
+    const codGuardia = Number.parseInt(req.params.id)
+    const guardia = await em.findOneOrFail(Guardia,{cod_guardia: codGuardia})
+    if(guardia!=null){
+    em.assign(guardia, req.body)
+    await em.flush()
+    res.status(200).json({status:200, message : "Guardia Modificado", data:guardia})}
+  } catch (error: any) {
+    res.status(500).json({ message: error.message })
+  }
 }
 
-async function finalizarContrato(req: Request, res: Response){
-    try{
-        const cod_guardia =  Number.parseInt(req.body.cod_guardia)
-        const elGuardia = await em.findOneOrFail(Guardia, { cod_guardia })
-        if(elGuardia.fecha_fin_contrato === null){
-            const today = new Date();
-            const day = today.getDate();
-            const month = today.getMonth() + 1;
-            let year = today.getFullYear();
-            let finalDate = `${year}-${month}-${day}`
-            const modif = await em.getConnection().execute(`update guardia set fecha_fin_contrato = ? where cod_guardia = ?;`, [finalDate, cod_guardia]);
-            await em.flush()
-            res.status(201).json({status: 201})
-        } else {
-            res.status(409).json({status: 409})
-        }
-    } catch (error: any) {
-        res.status(404).json({status: 404})
-    }
-}
 
-export { getAll, getOne, add, finalizarContrato,putGuardia}
+export { getAll, getOne, addOne,putGuardia,guardiaSanitizer}
 
 
 
