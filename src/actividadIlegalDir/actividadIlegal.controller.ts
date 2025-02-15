@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import { ActividadIlegal } from "./actividadIlegal.entity.js"
-import { Recluso } from "../reclusoDir/recluso.entity.js"
+import { Recluso } from "../recluso/recluso.entity.js"
 import { orm } from "../shared/db/orm.js"
 import { ConstraintViolationException } from "@mikro-orm/core"
 

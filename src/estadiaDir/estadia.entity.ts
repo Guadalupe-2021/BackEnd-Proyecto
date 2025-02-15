@@ -1,6 +1,6 @@
 import { Entity, PrimaryKey, Property, Rel, ManyToOne, PrimaryKeyProp } from "@mikro-orm/core"
-import { Recluso } from "../reclusoDir/recluso.entity.js";
-import { Celda } from "../celdaDir/celda.entity.js";
+import { Recluso } from "../recluso/recluso.entity.js";
+import { Celda } from "../celda/celda.entity.js";
 
 @Entity()
 export class Estadia {

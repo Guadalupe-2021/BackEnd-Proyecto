@@ -10,8 +10,8 @@ req.body.sanitizedInputGuardia = {
      nombre: req.body.nombre,
      apellido: req.body.apellido,
      dni: req.body.dni,
-     fecha_ini_contrato: req.body.fecha_ini_contrato,
-     fecha_fin_contrato: req.body.fecha_fin_contrato,
+     fecha_ini_contrato: new Date(req.body.fecha_ini_contrato),
+     fecha_fin_contrato: new Date(req.body.fecha_fin_contrato),
      }
        //more checks here
      //Number(req.body.dni)
@@ -73,6 +73,8 @@ async function addOne(req: Request, res: Response){
 async function putGuardia(req: Request, res: Response){
     try {
     const codGuardia = Number.parseInt(req.params.id)
+    //const codGuardia = req.body.cod_guardia
+
     const guardia = await em.findOneOrFail(Guardia,{cod_guardia: codGuardia})
     if(guardia!=null){
     em.assign(guardia, req.body)

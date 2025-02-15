@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Taller } from "./taller.entity.js"
-import { Recluso } from "../reclusoDir/recluso.entity.js"
+import { Recluso } from "../recluso/recluso.entity.js"
 
 
 const em = orm.em
@@ -44,7 +44,8 @@ async function getAll(req:Request, res:Response){
 async function getOne(req: Request, res: Response){
     try {
         const cod_taller =  Number.parseInt(req.params.cod_taller)
-        const elTaller = await em.findOneOrFail(Taller, { cod_taller }, {populate: ['reclusos']})
+        //const elTaller = await em.findOneOrFail(Taller, { cod_taller }, {populate: ['reclusos']})
+        const elTaller = 0
         res.status(201).json({ data: elTaller, status: 201} )
     } catch (error: any){
         res.status(404).json({ status: 404})

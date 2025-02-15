@@ -39,7 +39,8 @@ async function getAll(req:Request, res:Response){
 async function getOne(req: Request, res: Response){
     try {
         const cod_actividad =  Number.parseInt(req.params.cod_actividad)
-        const laActividad = await em.findOneOrFail(Actividad, { cod_actividad }, {populate: ['reclusos']})
+        //const laActividad = await em.findOneOrFail(Actividad, { cod_actividad }, {populate: ['reclusos']})
+        const laActividad = 0
         res.status(201).json({ data: laActividad} )
     } catch (error: any){
         res.status(404).json({ data: '0'})

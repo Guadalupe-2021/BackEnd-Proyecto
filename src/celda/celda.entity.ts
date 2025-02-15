@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, Rel, ManyToOne, PrimaryKeyProp } from "@mikro-orm/core";
-import { Sector } from "../sectorDir/sector.entity.js";
+import { Sector } from "../sector/sector.entity.js";
 
 @Entity()
 export class Celda {

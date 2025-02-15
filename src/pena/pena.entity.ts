@@ -1,11 +1,11 @@
 import { Entity, ManyToOne, Property, Rel, PrimaryKeyProp, PrimaryKey, ManyToMany, Cascade } from "@mikro-orm/core";
-import { Recluso } from "../reclusoDir/recluso.entity.js";
-import { Sentencia } from "../sentenciaDir/sentencia.entity.js";
+import { Recluso } from "../recluso/recluso.entity.js";
+import { Condena } from "../condena/condena.entity.js";
 
 
 
 @Entity()
-export class Condena {
+export class Pena {
     @ManyToOne(() => Recluso, { primary: true, nullable: false })
     cod_recluso !: Rel<Recluso>
 
@@ -18,8 +18,8 @@ export class Condena {
     @Property({unique : false, nullable : true})
     fecha_fin_real !: Date
 
-    @ManyToMany(() => Sentencia, (sentencia) => sentencia.condenas, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
-    sentencias !: Sentencia[]
+    @ManyToMany(() => Condena, (condena) => condena.penas, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
+    condenas !: Condena[]
 
     [PrimaryKeyProp] !: ['cod_recluso', 'fecha_ini'];
 }

@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, ManyToMany, Cascade } from "@mikro-orm/core";
-import { Recluso } from "../reclusoDir/recluso.entity.js";
+import { Recluso } from "../recluso/recluso.entity.js";
 
 @Entity()
 export class Taller {
@@ -27,8 +27,8 @@ export class Taller {
     @Property({nullable: false})
     estado !: 1
 
-    @ManyToMany(() => Recluso, (recluso) => recluso.talleres, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
-    reclusos !: Recluso[]
+    //@ManyToMany(() => Recluso, (recluso) => recluso.talleres, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
+    //reclusos !: Recluso[]
 }   
 
 

@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property, Rel, PrimaryKeyProp, PrimaryKey, ManyToMany, Cascade } from "@mikro-orm/core";
-import { Guardia } from "../guardiaDir/guardia.entity.js";
-import { Sector } from "../sectorDir/sector.entity.js";
+import { Guardia } from "../guardia/guardia.entity.js";
+import { Sector } from "../sector/sector.entity.js";
 
 
 @Entity()

@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
-import { Condena } from "../condenaDir/condena.entity.js"
+import { Pena } from "../pena/pena.entity.js"
+import { Condena } from "../condena/condena.entity.js"
+import { error } from "console"
 
 const em = orm.em
 em.getRepository(Recluso)
@@ -55,29 +57,36 @@ async function getOne(req: Request, res: Response){
     }
 }
 
-async function postOneRecluso(req: Request, res: Response){
+async function postReclusoConCondenas(req: Request, res: Response){
+    const {reclusoData,condenasData}= req.body
     try{
-        const recluso = await em.find(Recluso,{dni:req.body.dni})
-        if(recluso===null){
-           // const elRecluso = await em.create(Recluso, req.body)
-           // await em.flush()
-           // res.status(201).json({ status: 201, data: elRecluso.cod_recluso })
+     const elRecluso = await em.findOne(Recluso,{dni:reclusoData.dni})
+    if(elRecluso===null){
+        const recluso = em.create(Recluso,reclusoData)
+        const condenas = condenasData.map((condenaData: any) => orm.em.create(Condena, { ...condenaData, recluso }));
+        recluso.condenas = condenas
+        await em.persistAndFlush(recluso)
+         res.status(201).json({ status: 201, data: recluso.cod_recluso })
         }else{
-            const condena_si_o_no = await em.getConnection().execute(`select count(*) cont 
-                                                                    from condena c
-                                                                    inner join recluso r on c.cod_recluso_cod_recluso = r.cod_recluso
-                                                                    where dni = ? and c.fecha_fin_real is null;`, [req.body.dni]);
-            
-            const condenas = await em.find(Condena,{cod_recluso:req.body.cod_recluso,fecha_fin_real:null})                                                            
-            if(condenas != null){
-                res.status(201).json({  status: 202, data: recluso})
-            } else {
-                res.status(201).json({  status: 203, data: recluso})
-            }
+            console.log("somwthing")
+        
+        // Las penas se generan automaticamente desde el back. falta crear metodo. Usa info de las condenas para generarse    
+        //    const pena_si_o_no = await em.getConnection().execute(`select count(*) cont 
+        //                                                            from Pena c
+        //                                                            inner join recluso r on c.cod_recluso_cod_recluso = r.cod_recluso
+        //                                                            where dni = ? and c.fecha_fin_real is null;`, [req.body.dni]);
+        //    
+        //    const penas = await em.find(Pena,{cod_recluso:req.body.cod_recluso,fecha_fin_real:null})                                                            
+        //    if(penas != null){
+        //        res.status(201).json({  status: 202, data: elRecluso})
+        //    } else {
+        //        res.status(201).json({  status: 203, data: elRecluso})
+        //    }
+        res.status(409).json({ status: 409, message: "El Recluso ya existe" })
         }
     } catch (error: any) {
         res.status(500).json({message : error.message})
     }
 }
 
-export { getAll, getSome, getOne, postOneRecluso, sanitizarInputDeRecluso }
+export { getAll, getSome, getOne, postReclusoConCondenas, sanitizarInputDeRecluso }

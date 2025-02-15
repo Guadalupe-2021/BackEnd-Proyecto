@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, ManyToMany, Cascade } from "@mikro-orm/core";
-import { Sentencia } from "../sentenciaDir/sentencia.entity.js";
+import { Condena } from "../condena/condena.entity.js";
 
 @Entity()
 export class Sector {
@@ -12,6 +12,6 @@ export class Sector {
     @Property({ nullable: false, unique: false})
     descripcion !: string
 
-    @ManyToMany(() => Sentencia, (sentencia) => sentencia.sectores, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
-    sentencias !: Sentencia[]
+    //@ManyToMany(() => Condena, (condena) => condena.sectores, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
+    //Condenas !: Condena[]
 }
