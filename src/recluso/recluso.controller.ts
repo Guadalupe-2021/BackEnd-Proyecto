@@ -57,10 +57,10 @@ async function getOne(req: Request, res: Response){
     }
 }
 
-async function postReclusoConCondenas(req: Request, res: Response){
+async function addReclusoConCondenas(req: Request, res: Response){
     const {reclusoData,condenasData}= req.body
     try{
-     const elRecluso = await em.findOne(Recluso,{dni:reclusoData.dni})
+        const elRecluso = await em.findOne(Recluso,{dni:reclusoData.dni})
     if(elRecluso===null){
         const recluso = em.create(Recluso,reclusoData)
         const condenas = condenasData.map((condenaData: any) => orm.em.create(Condena, { ...condenaData, recluso }));
@@ -89,4 +89,25 @@ async function postReclusoConCondenas(req: Request, res: Response){
     }
 }
 
-export { getAll, getSome, getOne, postReclusoConCondenas, sanitizarInputDeRecluso }
+async function putRecluso(req:Request,res:Response){
+    try{
+        const recluso = await em.findOne(Recluso,{cod_recluso: Number(req.params.id)})
+        console.log(recluso)
+        if(recluso!=null){
+            req.body.dni = req.body.dni.toString()  //parece que en el assign se genra conflicto con el tipo de dato
+            em.assign(recluso,req.body)
+            await em.flush()
+            res.status(200).json({status:200, message:"Recluso Modificado"})
+        }
+
+        //if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
+        
+
+    }catch{
+        res.status(404).json({sataus:404, message:"Error Inesperado"})
+    }
+}
+
+
+
+export { getAll, getSome, getOne, addReclusoConCondenas, sanitizarInputDeRecluso, putRecluso }
