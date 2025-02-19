@@ -11,7 +11,6 @@ import { celdaRouter } from './celda/celda.routes.js'
 import { sectorRouter } from './sector/sector.routes.js'
 import { administradorRouter } from './administrador/administrador.routes.js'
 import { penaRouter } from './pena/pena.routes.js'
-import { estadiaRouter } from './estadiaDir/estadia.routes.js'
 import { reclusoRouter } from './recluso/recluso.routes.js'
 import { tallerRouter } from './taller/taller.routes.js'
 import { turnoRouter } from './turno/turno.routes.js'
@@ -55,7 +54,6 @@ app.use('/condenas', condenaRouter)
 app.use('/talleres', tallerRouter)
 app.use('/sectores', sectorRouter)
 app.use('/celdas', celdaRouter)
-app.use('/estadias', estadiaRouter)
 app.use('/turnos', turnoRouter)
 app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
@@ -71,7 +69,6 @@ app.listen(8080, () => {
 
 /*
 
-| estadia                   |
 | sector                    |
 | sector_sentencias         |
 

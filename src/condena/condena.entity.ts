@@ -7,6 +7,9 @@ import { Recluso } from "../recluso/recluso.entity.js";
 export class Condena {
     @ManyToOne(() => Recluso)
     recluso !: Recluso
+    
+    @ManyToOne(() => Pena, {nullable: true})//{ unique : false, nullable : false, cascade: [Cascade.ALL], owner: false}
+    pena ?: Pena
 
     @PrimaryKey( {nullable: false, unique: true})
     cod_condena !: number
@@ -29,8 +32,6 @@ export class Condena {
     @Property( {nullable: false, unique: false} )
     orden_de_gravedad !: number
 
-    @ManyToMany(() => Pena, (pena) => pena.condenas, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: false})
-    penas ?: Pena[]
 
     //@ManyToMany(() => Sector, (sector) => sector.condenas, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: false})
     //sectores !: Sector[]

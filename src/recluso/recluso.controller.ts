@@ -3,7 +3,6 @@ import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
 import { Pena } from "../pena/pena.entity.js"
 import { Condena } from "../condena/condena.entity.js"
-import { error } from "console"
 
 const em = orm.em
 em.getRepository(Recluso)
@@ -65,23 +64,11 @@ async function addReclusoConCondenas(req: Request, res: Response){
         const recluso = em.create(Recluso,reclusoData)
         const condenas = condenasData.map((condenaData: any) => orm.em.create(Condena, { ...condenaData, recluso }));
         recluso.condenas = condenas
+        recluso.asignarPena(condenas)
         await em.persistAndFlush(recluso)
          res.status(201).json({ status: 201, data: recluso.cod_recluso })
         }else{
-            console.log("somwthing")
-        
         // Las penas se generan automaticamente desde el back. falta crear metodo. Usa info de las condenas para generarse    
-        //    const pena_si_o_no = await em.getConnection().execute(`select count(*) cont 
-        //                                                            from Pena c
-        //                                                            inner join recluso r on c.cod_recluso_cod_recluso = r.cod_recluso
-        //                                                            where dni = ? and c.fecha_fin_real is null;`, [req.body.dni]);
-        //    
-        //    const penas = await em.find(Pena,{cod_recluso:req.body.cod_recluso,fecha_fin_real:null})                                                            
-        //    if(penas != null){
-        //        res.status(201).json({  status: 202, data: elRecluso})
-        //    } else {
-        //        res.status(201).json({  status: 203, data: elRecluso})
-        //    }
         res.status(409).json({ status: 409, message: "El Recluso ya existe" })
         }
     } catch (error: any) {
@@ -99,12 +86,13 @@ async function putRecluso(req:Request,res:Response){
             await em.flush()
             res.status(200).json({status:200, message:"Recluso Modificado"})
         }
+    if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
+    
 
-        //if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
         
 
     }catch{
-        res.status(404).json({sataus:404, message:"Error Inesperado"})
+        res.status(500).json({sataus:500, message:"Error Inesperado"})
     }
 }
 

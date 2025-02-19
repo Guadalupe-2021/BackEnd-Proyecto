@@ -67,24 +67,16 @@ async function add(req: Request, res: Response){
     }
 }
 
-async function deleteOne(req: Request, res: Response) {
+async function modificar(req: Request, res: Response) {
     try{
-        const cod_condena : any[] = [];
-        cod_condena[0] = Number(req.params.cod_condena)
-        const laCondena = await em.findOne(Condena, { cod_condena })
+        console.log("hellos")
+        const cod_condena = Number(req.params.cod_condena)
+        const laCondena = await em.findOne(Condena, { cod_condena:cod_condena })
+        console.log(laCondena)
         if(laCondena !== null){
-            const penas_con_condenas = await em.getConnection().execute(`select count(c_s.pena_cod_recluso_cod_recluso) as cont
-                                                                                from codena s
-                                                                                inner join pena_condena c_s on c_s.condena_cod_condena = ? and s.cod_condena = ?
-                                                                                inner join pena c on c_s.pena_fecha_ini = c.fecha_ini and c_s.pena_cod_recluso_cod_recluso = c.cod_recluso_cod_recluso
-                                                                                where c.fecha_fin_real is null;`, [cod_condena[0]]);
-            if(penas_con_condenas[0].cont > 0){
-                const condenaParaBorrar = em.getReference(Condena, cod_condena[0])
-                await em.removeAndFlush(condenaParaBorrar)
-                res.status(200).json({message: 'condena eliminada'})
-            } else {
-                res.status(409).json({message : 'penas activas con esa ccondena'})
-            }
+            em.assign(laCondena,req.body)
+            await em.flush()
+            res.status(200).json({message: "Condena Modificada"})
         } else {
             res.status(404).json({message: 'condena no encontrada'})
         }
@@ -93,4 +85,4 @@ async function deleteOne(req: Request, res: Response) {
     }
 }
 
-export { getAll, getSome, getOne, add, deleteOne, sanitizarInputDeCondena }
+export { getAll, getSome, getOne, add, modificar, sanitizarInputDeCondena }
