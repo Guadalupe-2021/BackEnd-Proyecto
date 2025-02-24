@@ -74,8 +74,10 @@ async function modificar(req: Request, res: Response) {
         const laCondena = await em.findOne(Condena, { cod_condena:cod_condena })
         console.log(laCondena)
         if(laCondena !== null){
+            laCondena.modificarPena(req.body)
             em.assign(laCondena,req.body)
             await em.flush()
+            console.log(laCondena)
             res.status(200).json({message: "Condena Modificada"})
         } else {
             res.status(404).json({message: 'condena no encontrada'})

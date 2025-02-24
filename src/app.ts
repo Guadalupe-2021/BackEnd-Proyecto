@@ -4,6 +4,8 @@ import express from 'express'
 import cors from 'cors'
 import { orm, syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
+
+// Routers
 import { guardiaRouter } from './guardia/guardia.routes.js'
 import { actividadRouter } from './actividad/actividad.routes.js'
 import { condenaRouter } from './condena/condena.routes.js'
@@ -16,12 +18,12 @@ import { tallerRouter } from './taller/taller.routes.js'
 import { turnoRouter } from './turno/turno.routes.js'
 import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.routes.js'
 
-var router = express.Router();
-
 //options for cors midddleware
 const options: cors.CorsOptions = {
   allowedHeaders: [
     'Origin',
+    'authorization'
+    ,
     'X-Requested-With',
     'Content-Type',
     'Accept',

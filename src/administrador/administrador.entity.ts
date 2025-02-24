@@ -7,6 +7,9 @@ export class Administrador {
     
     @Property({ nullable: false})
     nombre !: string 
+    
+    @Property({ nullable: false})
+    especial !: boolean
 
     @Property({ nullable: false})
     apellido !: string

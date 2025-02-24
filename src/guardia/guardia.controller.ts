@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Guardia } from "./guardia.entity.js"
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const em = orm.em
 em.getRepository(Guardia)
@@ -25,6 +29,23 @@ req.body.sanitizedInputGuardia = {
   //  }
   //})
   next()
+}
+
+//process.env.ACCESS_SECRET_TOKEN as string
+function verificarToken(req:Request,res:Response,next:NextFunction){
+    console.log("verifyToken")
+    const token = req.headers['authorization'];
+    console.log(token)
+    console.log("after headeer authorixation")
+    jwt.verify(token as string ,'secret', (err, decoded) => {
+    if (err) { 
+        console.log(err)
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }else{
+        return decoded
+    }
+    })
+    next()
 }
 
 
@@ -86,7 +107,7 @@ async function putGuardia(req: Request, res: Response){
 }
 
 
-export { getAll, getOne, addOne,putGuardia,guardiaSanitizer}
+export { getAll, getOne, addOne,putGuardia,guardiaSanitizer,verificarToken}
 
 
 

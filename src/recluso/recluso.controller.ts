@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
-import { Pena } from "../pena/pena.entity.js"
 import { Condena } from "../condena/condena.entity.js"
 
 const em = orm.em
@@ -63,12 +62,12 @@ async function addReclusoConCondenas(req: Request, res: Response){
     if(elRecluso===null){
         const recluso = em.create(Recluso,reclusoData)
         const condenas = condenasData.map((condenaData: any) => orm.em.create(Condena, { ...condenaData, recluso }));
-        recluso.condenas = condenas
         recluso.asignarPena(condenas)
+        recluso.condenas = condenas
+        console.log(condenas)
         await em.persistAndFlush(recluso)
          res.status(201).json({ status: 201, data: recluso.cod_recluso })
         }else{
-        // Las penas se generan automaticamente desde el back. falta crear metodo. Usa info de las condenas para generarse    
         res.status(409).json({ status: 409, message: "El Recluso ya existe" })
         }
     } catch (error: any) {

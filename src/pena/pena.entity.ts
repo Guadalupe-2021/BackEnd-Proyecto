@@ -18,10 +18,8 @@ export class Pena {
     @Property({unique : false, nullable : true})
     fecha_fin_real !: Date
 
-
-
     @OneToMany(() => Condena, (condena) => condena.pena)
-    condenas !: Condena[]
+    condenas !: Rel<Condena>[]
 
     [PrimaryKeyProp] !: ['cod_recluso', 'fecha_ini'];
 }

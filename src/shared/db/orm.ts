@@ -1,12 +1,15 @@
 import { MikroORM } from "@mikro-orm/core";
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 export const orm = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
     dbName: 'libertant2',
     type: 'mysql',
-    clientUrl: 'mysql://admin:admin@localhost:3306/libertant2', // mysql://username:password@localhost:3306/your_database_name
+    clientUrl: 'mysql://admin:'+`${process.env.DATABASE_PASSWORD}`+'@localhost:3306/libertant2', // mysql://username:password@localhost:3306/your_database_name
     highlighter: new SqlHighlighter(),
     debug: true,
     /*

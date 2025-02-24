@@ -1,6 +1,21 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Administrador } from "./administrador.entity.js"
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
+
+const SECRET_KEY= 'secret'
+function verifyToken(userData:any){
+    jwt.verify(userData,process.env.ACCESS_SECRET_TOKEN as string)
+} 
+function generateToken(userData:Administrador){
+    if(userData.especial){
+     return jwt.sign(userData,SECRET_KEY ) 
+    }else{
+        return jwt.sign(userData,SECRET_KEY)
+    }
+}
 
 const em = orm.em
 em.getRepository(Administrador)
@@ -26,12 +41,9 @@ async function logIn(req: Request, res: Response){
     try {
         const cod_administrador = Number.parseInt(req.body.cod_administrador) 
         const elAdmin = await em.findOneOrFail(Administrador, { cod_administrador })
+        const jwtToken = generateToken(Object.assign({},elAdmin))
         if(elAdmin.contrasenia === req.body.contrasenia){
-            if(elAdmin.cod_administrador <= 10){
-                res.status(202).json({ status: 202, tipo_usuario:"Administrador"} )
-            } else {
-                res.status(202).json({ status: 202, tipo_usuario:"Normal" } )
-            }
+            res.status(202).json({ status: 202, token: jwtToken} )
         } else {
             res.status(401).json({ status: 401} )
         }
@@ -59,5 +71,10 @@ async function getOne(req: Request, res: Response){
         res.status(500).json({ message: error.message})
     }
 }
+
+
+
+
+
 
 export { getAll, getOne, logIn, sanitizarInputDeAdministrador }

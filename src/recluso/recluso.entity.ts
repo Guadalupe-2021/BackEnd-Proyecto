@@ -53,11 +53,15 @@ export class Recluso {
   })
       if(!this.pena){
         this.pena = new Pena()
+        const fecha_ini = new Date()
         this.pena.fecha_ini = new Date()
-        this.pena.fecha_fin_estimada = this.pena.fecha_ini
+        this.pena.fecha_fin_estimada = fecha_ini
         this.pena.fecha_fin_estimada.setFullYear(this.pena.fecha_fin_estimada.getFullYear() + anios);
         this.pena.fecha_fin_estimada.setMonth(this.pena.fecha_fin_estimada.getMonth() + meses);
         this.pena.fecha_fin_estimada.setDate(this.pena.fecha_fin_estimada.getDate() + dias);
+        condenas.forEach((condena)=>{
+          condena.pena = this.pena
+        })
       }  
   }
 
