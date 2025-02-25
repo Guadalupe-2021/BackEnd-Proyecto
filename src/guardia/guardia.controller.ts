@@ -31,22 +31,6 @@ req.body.sanitizedInputGuardia = {
   next()
 }
 
-//process.env.ACCESS_SECRET_TOKEN as string
-function verificarToken(req:Request,res:Response,next:NextFunction){
-    console.log("verifyToken")
-    const token = req.headers['authorization'];
-    console.log(token)
-    console.log("after headeer authorixation")
-    jwt.verify(token as string ,'secret', (err, decoded) => {
-    if (err) { 
-        console.log(err)
-      return res.status(403).json({ message: 'Invalid or expired token' });
-    }else{
-        return decoded
-    }
-    })
-    next()
-}
 
 
 async function getAll(req:Request, res:Response){
@@ -107,7 +91,7 @@ async function putGuardia(req: Request, res: Response){
 }
 
 
-export { getAll, getOne, addOne,putGuardia,guardiaSanitizer,verificarToken}
+export { getAll, getOne, addOne,putGuardia,guardiaSanitizer}
 
 
 

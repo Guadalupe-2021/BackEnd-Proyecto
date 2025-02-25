@@ -5,16 +5,8 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const SECRET_KEY= 'secret'
-function verifyToken(userData:any){
-    jwt.verify(userData,process.env.ACCESS_SECRET_TOKEN as string)
-} 
 function generateToken(userData:Administrador){
-    if(userData.especial){
-     return jwt.sign(userData,SECRET_KEY ) 
-    }else{
-        return jwt.sign(userData,SECRET_KEY)
-    }
+    return jwt.sign(userData,process.env.SECRET_KEY as string) 
 }
 
 const em = orm.em
@@ -38,12 +30,15 @@ function sanitizarInputDeAdministrador(req: Request, res: Response, next: NextFu
 }
 
 async function logIn(req: Request, res: Response){
+    // SE GENERA EL TOKEN Y E ENVIA AL CLIENTE
     try {
         const cod_administrador = Number.parseInt(req.body.cod_administrador) 
         const elAdmin = await em.findOneOrFail(Administrador, { cod_administrador })
         const jwtToken = generateToken(Object.assign({},elAdmin))
         if(elAdmin.contrasenia === req.body.contrasenia){
-            res.status(202).json({ status: 202, token: jwtToken} )
+            res.status(202).json({ status: 202,
+                data:{nombre:elAdmin.nombre,especial:elAdmin.especial} ,
+                token: jwtToken} )
         } else {
             res.status(401).json({ status: 401} )
         }

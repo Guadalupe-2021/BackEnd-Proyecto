@@ -17,12 +17,13 @@ import { reclusoRouter } from './recluso/recluso.routes.js'
 import { tallerRouter } from './taller/taller.routes.js'
 import { turnoRouter } from './turno/turno.routes.js'
 import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.routes.js'
+import { verificarToken } from './shared/verification/tokenVeryfication.js'
 
 //options for cors midddleware
 const options: cors.CorsOptions = {
   allowedHeaders: [
     'Origin',
-    'authorization'
+    'Authorization'
     ,
     'X-Requested-With',
     'Content-Type',
@@ -45,12 +46,13 @@ app.use((req, res, next) => {
   RequestContext.create(orm.em, next)
 })
 
+app.use('/administradores', administradorRouter)
+app.use(verificarToken)
 app.use('/actividades', actividadRouter)
 app.use('/actividadesIlegales', actividadIlegalRouter)
 app.use('/guardias', guardiaRouter)
 app.use('/penas', penaRouter)
 app.use('/sectores', sectorRouter)
-app.use('/administradores', administradorRouter)
 app.use('/reclusos', reclusoRouter)
 app.use('/condenas', condenaRouter)
 app.use('/talleres', tallerRouter)

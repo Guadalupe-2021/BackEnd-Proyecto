@@ -85,16 +85,32 @@ async function putRecluso(req:Request,res:Response){
             await em.flush()
             res.status(200).json({status:200, message:"Recluso Modificado"})
         }
-    if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
-    
-
-        
-
+        if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
     }catch{
         res.status(500).json({sataus:500, message:"Error Inesperado"})
     }
 }
 
+async function liberarRecluso(req:Request,res:Response){
+    const id = Number(req.params.id)
+    try{
+        const recluso = await em.findOne(Recluso,{cod_recluso:id})
+        console.log("recluso.pena: ",recluso?.pena)
+        if(recluso!=null){
+            const pena_a_modificar = recluso.pena
+            pena_a_modificar.fecha_fin_real = new Date(req.body.pena.fecha_fin_real)
+            console.log(pena_a_modificar)
+            await em.persistAndFlush(pena_a_modificar)
+            console.log("pena modificada y agregada")
+            res.status(200).json({status:200, message:"Recluso Liberado"})
+        }
+    }catch(error){
+        console.log(error)
+        res.status(500).json({sataus:500, message:"Error Inesperado"})
+    }
+    
+}
 
 
-export { getAll, getSome, getOne, addReclusoConCondenas, sanitizarInputDeRecluso, putRecluso }
+
+export { getAll, getSome, getOne, addReclusoConCondenas, sanitizarInputDeRecluso, putRecluso , liberarRecluso}

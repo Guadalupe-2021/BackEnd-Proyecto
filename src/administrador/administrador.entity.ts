@@ -26,5 +26,3 @@ export class Administrador {
     @Property({nullable: false})
     contrasenia !: string
 }   
-
-
