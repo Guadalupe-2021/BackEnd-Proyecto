@@ -10,6 +10,8 @@ const em = orm.em
 em.getRepository(Guardia)
 
 async function guardiaSanitizer(req:Request,res:Response,next:NextFunction){
+    console.log("en el guardia sanitizer",req.body)
+    try{
 req.body.sanitizedInputGuardia = {
      nombre: req.body.nombre,
      apellido: req.body.apellido,
@@ -17,7 +19,9 @@ req.body.sanitizedInputGuardia = {
      fecha_ini_contrato: new Date(req.body.fecha_ini_contrato),
      fecha_fin_contrato: new Date(req.body.fecha_fin_contrato),
      }
-       //more checks here
+    console.log("guardia sanitizer realizado con exito",req.body.sanitizedInputGuardia)
+     
+    //more checks here
      //Number(req.body.dni)
      //new Date(req.body.fecha_ini_contrato)
      //new Date(req.body.fecha_fin_contrato)
@@ -28,6 +32,9 @@ req.body.sanitizedInputGuardia = {
   //    delete req.body.sanitizedInput[key]
   //  }
   //})
+  }catch(error){
+    console.log(error)
+  }
   next()
 }
 
@@ -72,6 +79,7 @@ async function addOne(req: Request, res: Response){
         }
     } catch (error: any) {
         res.status(500).json({message : error.message})
+        console.log(error)
     }
 }
 
@@ -79,13 +87,21 @@ async function putGuardia(req: Request, res: Response){
     try {
     const codGuardia = Number.parseInt(req.params.id)
     //const codGuardia = req.body.cod_guardia
-
-    const guardia = await em.findOneOrFail(Guardia,{cod_guardia: codGuardia})
+    console.log('Look For Guardia')
+    const guardia = await em.findOne(Guardia,{cod_guardia: codGuardia})
     if(guardia!=null){
     em.assign(guardia, req.body)
     await em.flush()
-    res.status(200).json({status:200, message : "Guardia Modificado", data:guardia})}
+    console.log('guardia modificado')
+    res.status(200).json({status:200, message : "Guardia Modificado", data:guardia})
+    }else{
+    console.log('guardia no encontrado')
+
+        res.status(404).json({status:404, message:'Not Found'})
+    }
   } catch (error: any) {
+    console.log('error inesperado')
+
     res.status(500).json({ message: error.message })
   }
 }

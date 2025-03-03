@@ -16,12 +16,13 @@ export function verificarToken(req:Request,res:Response,next:NextFunction){
             return
         }
         const decodedToken = jwt.verify(token as string ,SECRET_KEY) as JwtPayload  
-        console.log("Token Verificado Exitosamente", decodedToken)
+        console.log("Token Verificado Exitosamente") //, decodedToken es el administrador
         req.user = decodedToken
         next()
     }
-    catch{
+    catch(error){
         res.status(500).json({message:'500 Token Invalido o Expirado'})
+        console.log(error)
     }
     
 }

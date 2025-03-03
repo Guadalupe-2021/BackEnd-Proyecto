@@ -1,4 +1,5 @@
-import { MikroORM } from "@mikro-orm/core";
+//import { MikroORM } from "@mikro-orm/core";
+import { MikroORM } from '@mikro-orm/mysql';
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 import dotenv from "dotenv";
 
@@ -8,7 +9,6 @@ export const orm = await MikroORM.init({
     entities: ['dist/**/*.entity.js'],
     entitiesTs: ['src/**/*.entity.ts'],
     dbName: 'libertant2',
-    type: 'mysql',
     clientUrl: 'mysql://admin:'+`${process.env.DATABASE_PASSWORD}`+'@localhost:3306/libertant2', // mysql://username:password@localhost:3306/your_database_name
     highlighter: new SqlHighlighter(),
     debug: true,
@@ -28,4 +28,5 @@ export const syncSchema = async() => {
     //await generator.createSchema()  // solo en las etapas de desarrollo
     await generator.updateSchema()
 }
+
 

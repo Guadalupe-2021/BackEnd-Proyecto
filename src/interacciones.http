@@ -1,6 +1,6 @@
 ### get all
 GET http://localhost:8080/sectores
-
+Content-Type: application/json
 ### get one
 GET http://localhost:8080/sectores/1
 
@@ -90,7 +90,7 @@ Content-Type: application/json
 
 
 ### get all guardias
-GET http://localhost:8080/guardias 
+GET http://localhost:8080/guardias/1 
 
 ### get guardia
 GET http://localhost:8080/guardias/45655988

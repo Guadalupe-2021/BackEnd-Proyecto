@@ -72,4 +72,4 @@ async function getOne(req: Request, res: Response){
 
 
 
-export { getAll, getOne, logIn, sanitizarInputDeAdministrador }
+export { getAll, getOne, logIn, sanitizarInputDeAdministrador,generateToken }

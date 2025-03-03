@@ -64,8 +64,8 @@ async function add(req: Request, res: Response){
                 const laActividad = em.create(Actividad, req.body)
                 await em.flush()
                 Object.keys(cant_habilitados).forEach(async (key) => {
-                    const unaIns = await em.getConnection().execute(`
-                        insert into actividad_reclusos (actividad_cod_actividad, recluso_cod_recluso) values (?, ?);`, [laActividad.cod_actividad, cant_habilitados[key].rec])
+                    //const unaIns = await em.getConnection().execute(`
+                    //    insert into actividad_reclusos (actividad_cod_actividad, recluso_cod_recluso) values (?, ?);`, [laActividad.cod_actividad, cant_habilitados[key].rec])
                     await em.flush()
                 })
                 res.status(201).json({ data: '1'})

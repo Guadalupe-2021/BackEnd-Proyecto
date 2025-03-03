@@ -2,7 +2,7 @@
 import 'reflect-metadata'
 import express from 'express'
 import cors from 'cors'
-import { orm, syncSchema } from './shared/db/orm.js'
+import { syncSchema } from './shared/db/orm.js'
 import { RequestContext } from '@mikro-orm/core'
 
 // Routers
@@ -18,32 +18,22 @@ import { tallerRouter } from './taller/taller.routes.js'
 import { turnoRouter } from './turno/turno.routes.js'
 import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.routes.js'
 import { verificarToken } from './shared/verification/tokenVeryfication.js'
+import { initORM } from './shared/db/orm.db.js'
+import config from './shared/db/orm.config.js'
+import { corsOptions } from './shared/cors.options.js'
 
-//options for cors midddleware
-const options: cors.CorsOptions = {
-  allowedHeaders: [
-    'Origin',
-    'Authorization'
-    ,
-    'X-Requested-With',
-    'Content-Type',
-    'Accept',
-    'X-Access-Token',
-  ],
-  credentials: true,
-  methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
-  origin: "http://localhost:4200",
-  preflightContinue: false,
-};
+
+
 //misc
-const app = express()
+export const app = express()
 
-app.use(cors(options))
-
+app.use(cors(corsOptions))
 app.use(express.json())
 
+const db = await initORM(config);
 app.use((req, res, next) => {
-  RequestContext.create(orm.em, next)
+  //RequestContext.create(orm.em, next)
+  RequestContext.create(db.em, next)
 })
 
 app.use('/administradores', administradorRouter)
@@ -63,32 +53,10 @@ app.use((_, res) => {
     return res.status(404).send({ message: 'Resource not found' })
 })
 
-await syncSchema()  // solo en etapas de desarrollo  
+//await syncSchema()  // solo en etapas de desarrollo  
   
 // listen
 app.listen(8080, () => {
     console.log('server correctly running at 8080')
 })
-
-
-/*
-
-| sector                    |
-| sector_sentencias         |
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
