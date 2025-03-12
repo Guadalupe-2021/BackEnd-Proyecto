@@ -57,7 +57,7 @@ describe('CRUD guardia localhost 8080',()=>{
       .send(newGuardia)
       .expect(201)
     })
-    it('POST /guardias shoud give ERROR 409 Conflict', async ()=>{
+    it('POST /guardias/:id shoud give ERROR 409 Conflict', async ()=>{
       const response = await supertest(ruta_origen)
       .post('/guardias')
       .set('Authorization', 'Bearer '+tokenValido)
@@ -74,7 +74,7 @@ describe('CRUD guardia localhost 8080',()=>{
       .send(mod_guardia1)
       .expect(200)
     })
-    it('PUT /guardias shoud give ERROR 404 Not Found', async ()=>{
+    it('PUT /guardias/:id shoud give ERROR 404 Not Found', async ()=>{
       const response = await request(ruta_origen)
       .put('/guardias/1344/modificar')
       .set('Authorization', 'Bearer '+tokenValido)

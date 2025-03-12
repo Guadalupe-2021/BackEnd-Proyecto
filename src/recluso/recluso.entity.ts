@@ -10,35 +10,37 @@ import { Pena } from "../pena/pena.entity.js";
 export class Recluso {
     
     @PrimaryKey({ nullable: false, unique: true})
-    cod_recluso !: number  // el !: significa que esta propiedad no puede ser nula
+    cod_recluso !: number ; // el !: significa que esta propiedad no puede ser nula
     
     @Property({ nullable: false})
-    nombre !: string 
+    nombre !: string ;
     
     @Property({ nullable: false})
-    apellido !: string
+    apellido !: string;
     
     @Property({ nullable: false, type:'string'}) // type number has int limits ( 2,147,483,647 max or error)
-    dni !: number
+    dni !: number;
     
     @Property({ nullable: false})
-    fecha_nac !: Date
+    fecha_nac !: Date;
     
-    //@ManyToMany(() => Actividad, (actividad) => actividad.reclusos, { eager: true, unique : false, nullable : false, cascade: [Cascade.ALL], owner: false})
-    //actividades !: Actividad[]
     
     //@ManyToMany(() => Taller, (taller) => taller.reclusos, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: false})
     //talleres !: Taller[]
     
     //@ManyToMany(() => ActividadIlegal, (act_ilegal) => act_ilegal.reclusos, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: false})
     //actividades_ilegales !: ActividadIlegal[]
+
     
-    @OneToMany(() => Condena, condena => condena.recluso, { eager: true })
+    @OneToMany(() => Condena, condena => condena.recluso, { eager: true})
     condenas: Condena[] = [];
+
+    @ManyToMany(() => Actividad, (actividad) => actividad.reclusos, {eager: true,owner:true}) //, cascade: [Cascade.ALL], owner: false
+    actividades: Actividad[] = [];
     
     @OneToOne(()=>Pena,{eager:true})
-    pena!:Pena
-
+    pena!:Pena;
+    
 
     // METODOS
  asignarPena(condenas:Condena[]){

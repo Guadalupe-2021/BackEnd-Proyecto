@@ -29,7 +29,7 @@ function sanitizarInputDeActividad(req : Request, res : Response, next: NextFunc
 
 async function getAll(req:Request, res:Response){
     try{
-        const actividades = await em.find(Actividad, {estado:1});
+        const actividades = await em.find(Actividad, {});
         res.status(201).json({ status: 201 , data : actividades})
     } catch (error: any) {
         res.status(404).json({ status: 404})

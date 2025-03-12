@@ -17,28 +17,27 @@ export class Actividad {
     locacion !: string
 
     @Property({ nullable: false})
-    dia_de_la_semana !: number  // no vamos a guardar el nombre del dia de la semana, hay que transformarlo siempre y no tiene sentido. pero si vamos a mantener el numero
+    dia_de_la_semana !: string  // no vamos a guardar el nombre del dia de la semana, hay que transformarlo siempre y no tiene sentido. pero si vamos a mantener el numero
     
     @Property({ nullable: false})
-    hora_inicio !: number
+    hora_inicio !: string
 
     @Property({ nullable: false})
-    hora_fin !: number
+    hora_fin !: string
 
     @Property({nullable: false})
-    estado !: 1
+    cant_cupos !: number
+    // cambiar nombre a cupos
 
-    @Property({nullable: false})
-    cantidad_minima !: number
 
-    @Property({nullable: false})
-    edad_minima !: number
-
-    @ManyToOne(() => Sector, { nullable: false })
+    @ManyToOne(() => Sector)
     cod_sector !: Rel<Sector>
+    
+    //@Property({nullable: false})
+    //edad_minima !: number
 
-    //@ManyToMany(() => Recluso, (recluso) => recluso.actividades, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
-    //reclusos !: Recluso[]
+    @ManyToMany( () => Recluso, (recluso) => recluso.actividades ,{nullable:true}) // , cascade: [Cascade.ALL], owner: true
+    reclusos ?: Recluso[]
 }   
 
 
