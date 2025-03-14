@@ -25,7 +25,7 @@ async function getSome(req : Request, res : Response){
 
 async function getOne(req: Request, res: Response){
     try {
-        const cod_sector =  Number.parseInt(req.params.cod_sector) 
+        const cod_sector =  req.params.cod_sector
         const elSector = await em.findOneOrFail(Sector, { cod_sector })
         res.status(201).json({ status: 201, data: elSector } )
     } catch (error: any){
