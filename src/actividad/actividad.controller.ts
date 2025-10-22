@@ -39,11 +39,10 @@ async function getAll(req:Request, res:Response){
 async function getOne(req: Request, res: Response){
     try {
         const cod_actividad =  Number.parseInt(req.params.cod_actividad)
-        //const laActividad = await em.findOneOrFail(Actividad, { cod_actividad }, {populate: ['reclusos']})
-        const laActividad = 0
+        const laActividad = await em.findOneOrFail(Actividad, { cod_actividad:cod_actividad })
         res.status(201).json(laActividad)
     } catch (error: any){
-        res.status(404).json({ data: '0'})
+        res.status(404).json({ message: 'Actividad No Encontrada'})
     }
 }
 
@@ -75,6 +74,26 @@ async function update(req: Request, res: Response) {
             return
         }
     } catch (error: any) {
+        console.log(error)
+        res.status(500).json({ message : error.message })
+    }
+}
+
+async function inscribir(req: Request, res: Response) {
+    try{
+        const id_actividad = Number(req.params.cod_actividad)
+        const actividad = await em.findOne(Actividad, {cod_actividad:id_actividad})
+        if(actividad!=null) {
+            const reclusos_mod = {reclusos:req.body.reclusos}
+            em.assign(actividad, reclusos_mod)
+            await em.flush()
+            res.status(200).json({ message: 'Actividad Modificada'})
+        } else {
+            res.status(404).json({message:'Actividad No Encontrada'})
+            return
+        }
+    } catch (error: any) {
+        console.log(error)
         res.status(500).json({ message : error.message })
     }
 }
@@ -99,7 +118,7 @@ async function deleteOne(req:Request,res:Response){
 }
 
 
-export { getAll, getOne, add, update, sanitizarInputDeActividad,deleteOne }
+export { getAll, getOne, add, update,inscribir , sanitizarInputDeActividad,deleteOne }
 
 
 

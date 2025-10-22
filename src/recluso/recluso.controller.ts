@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
 import { Condena } from "../condena/condena.entity.js"
+import { Actividad } from "../actividad/actividad.entity.js"
+import { Collection } from "@mikro-orm/core"
 
 const em = orm.em
 em.getRepository(Recluso)
@@ -91,6 +93,35 @@ async function putRecluso(req:Request,res:Response){
     }
 }
 
+
+async function inscripcionActividad(req:Request,res:Response){
+    try{
+        const recluso = await em.findOne(Recluso,{cod_recluso: Number(req.params.id)})
+        const {actividad_data,eliminar}=req.body
+        console.log(req.body)
+        console.log(actividad_data)
+        const actividad = await em.findOne(Actividad,{cod_actividad:actividad_data.cod_actividad})
+
+        if(recluso!=null && actividad!=null){
+
+            if(!eliminar){     
+            //@ts-expect-error
+            recluso.actividades.add(actividad)  // mikro orm lo ve como una collection y typescript como un array :(
+            }else{
+            //@ts-expect-error
+            recluso.actividades.remove(actividad)  
+            }
+            await em.flush()
+            console.log('actividad_agregada')
+            res.status(200).json({status:200, message:"Recluso Inscripto"})
+        }
+        if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
+    }catch(error){
+        console.log(error)
+        res.status(500).json({sataus:500, message:"Error Inesperado"})
+    }
+}
+
 async function liberarRecluso(req:Request,res:Response){
     const id = Number(req.params.id)
     try{
@@ -113,4 +144,4 @@ async function liberarRecluso(req:Request,res:Response){
 
 
 
-export { getAll, getSome, getOne, addReclusoConCondenas, sanitizarInputDeRecluso, putRecluso , liberarRecluso}
+export { getAll, getSome, getOne, addReclusoConCondenas, sanitizarInputDeRecluso, putRecluso , liberarRecluso,inscripcionActividad}
