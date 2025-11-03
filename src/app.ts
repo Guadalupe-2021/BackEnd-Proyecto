@@ -19,7 +19,7 @@ import { turnoRouter } from './turno/turno.routes.js'
 import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.routes.js'
 import { verificarToken } from './shared/verification/tokenVeryfication.js'
 import { initORM } from './shared/db/orm.db.js'
-import config from './shared/db/orm.config.js'
+import { config } from './shared/db/orm.config.js'
 import { corsOptions } from './shared/cors.options.js'
 
 

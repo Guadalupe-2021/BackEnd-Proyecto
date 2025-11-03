@@ -3,11 +3,12 @@ import { orm } from "../shared/db/orm.js"
 import { Guardia } from "./guardia.entity.js"
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import { EntityManager } from "@mikro-orm/mysql"
 
 dotenv.config()
 
-const em = orm.em
-em.getRepository(Guardia)
+// const em = orm.em
+// em.getRepository(Guardia)
 
 async function guardiaSanitizer(req:Request,res:Response,next:NextFunction){
     console.log("en el guardia sanitizer",req.body)
@@ -39,10 +40,12 @@ req.body.sanitizedInputGuardia = {
 }
 
 
+export class guardia_Service {
+constructor(private em: EntityManager) {this.em.getRepository(Guardia)}
 
-async function getAll(req:Request, res:Response){
+async getAll(req:Request, res:Response){
     try{
-        const guardias = await em.find(Guardia,{})
+        const guardias = await this.em.find(Guardia,{})
         if(guardias!==null)res.status(200).json(guardias)
         if(guardias===null)res.status(404).json({status:404, message:"Not Found"})
     } catch (error: any) {
@@ -50,13 +53,13 @@ async function getAll(req:Request, res:Response){
     }
 }
 
-async function getOne(req: Request, res: Response){
+async getOne(req: Request, res: Response){
     try {
     if(!(req.params.id.indexOf(".")))throw Error
     const id_guardia = Number(req.params.id)
     if((id_guardia % 1 != 0)) throw Error  // error si es decimal
 
-const guardia = (id_guardia>9999999) ? await em.findOne(Guardia, {dni:id_guardia}) : await em.findOne(Guardia, {cod_guardia:id_guardia});
+const guardia = (id_guardia>9999999) ? await this.em.findOne(Guardia, {dni:id_guardia}) : await this.em.findOne(Guardia, {cod_guardia:id_guardia});
     if(guardia !== null){
             res.status(201).json(guardia)
         }else{
@@ -67,12 +70,12 @@ const guardia = (id_guardia>9999999) ? await em.findOne(Guardia, {dni:id_guardia
     }
 }
 
-async function addOne(req: Request, res: Response){
+async addOne(req: Request, res: Response){
     try{
-        const guardia = await em.findOne(Guardia, {dni:req.body.dni});
+        const guardia = await this.em.findOne(Guardia, {dni:req.body.dni});
         if(guardia === null){
-            em.create(Guardia, req.body.sanitizedInputGuardia) 
-            await em.flush()
+            this.em.create(Guardia, req.body.sanitizedInputGuardia) 
+            await this.em.flush()
             res.status(201).json({ status: 201 })
         } else {
             res.status(409).json({status: 409, message:"ERROR: El Guardia Ya Existe"})
@@ -83,15 +86,15 @@ async function addOne(req: Request, res: Response){
     }
 }
 
-async function putGuardia(req: Request, res: Response){
+async putGuardia(req: Request, res: Response){
     try {
     const codGuardia = Number.parseInt(req.params.id)
     //const codGuardia = req.body.cod_guardia
     console.log('Look For Guardia')
-    const guardia = await em.findOne(Guardia,{cod_guardia: codGuardia})
+    const guardia = await this.em.findOne(Guardia,{cod_guardia: codGuardia})
     if(guardia!=null){
-    em.assign(guardia, req.body)
-    await em.flush()
+    this.em.assign(guardia, req.body)
+    await this.em.flush()
     console.log('guardia modificado')
     res.status(200).json({status:200, message : "Guardia Modificado", data:guardia})
     }else{
@@ -105,9 +108,9 @@ async function putGuardia(req: Request, res: Response){
     res.status(500).json({ message: error.message })
   }
 }
+}
 
-
-export { getAll, getOne, addOne,putGuardia,guardiaSanitizer}
+export { guardiaSanitizer}
 
 
 

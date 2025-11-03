@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "start": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/src/app.js\"",
-    "test": "jest"
+    "test": "jest",
+    "testdb": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./dist/tests/app_test.js\""
   },
   "keywords": [],
   "author": "",

@@ -1,12 +1,13 @@
-//import { bootstrap } from '../../app.js'
+
+//import { bootstrap } from '../../../tests/app_test.js';
 import { initORM } from './orm.db.js';
-import config from './orm.config.js';
+import {config_test} from './orm.config.js';
 
 export async function initTestApp(port: number) {
   // this will create all the ORM services and cache them
   const { orm } = await initORM({
     // first, include the main config
-    ...config,
+    ...config_test,
     // no need for debug information, it would only pollute the logs
     debug: false,
     // we will use in-memory database, this way we can easily parallelize our tests
@@ -19,7 +20,7 @@ export async function initTestApp(port: number) {
   // create the schema so we can use the database
   await orm.schema.createSchema();
 
-  //const { test_app } = await bootstrap(port);
+  //const { app } = await bootstrap(8081);
 
-  //return test_app;
+  //return app;
 }
