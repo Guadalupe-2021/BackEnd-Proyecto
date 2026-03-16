@@ -32,7 +32,7 @@ export class Actividad {
     cod_sector !: Rel<Sector>
     
 
-    @ManyToMany( () => Recluso, (recluso) => recluso.actividades ,{eager:true ,nullable:true}) // , cascade: [Cascade.ALL], owner: true
+    @ManyToMany( () => Recluso, (recluso) => recluso.actividades ,{nullable:true}) // , cascade: [Cascade.ALL], owner: true
     reclusos ?: Recluso[]
 }   
 

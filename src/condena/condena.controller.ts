@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Condena } from "./condena.entity.js"
+import { Pena } from "../pena/pena.entity.js"
 
 const em = orm.em
 em.getRepository(Condena)
@@ -32,20 +33,12 @@ async function getAll(req : Request, res : Response){
     }
 }
  
-async function getSome(req : Request, res : Response){
-    try{
-        const condenas = await em.find(Condena, { nombre: '%req.params.nombreParcial%'})
-        res.status(201).json({ data: condenas })
-    } catch (error: any) {
-        res.status(404).json({ message: 'error'})
-    }
-}
 
 async function getOne(req: Request, res: Response){
     try {
         const cod_condena =  Number.parseInt(req.params.cod_condena) //
-        const laCondena = await em.findOne(Condena, { cod_condena })
-        res.status(201).json({ data: laCondena} )
+        const condena = await em.findOne(Condena, { cod_condena })
+        res.status(201).json({ data: condena} )
     } catch (error: any){
         res.status(500).json({ message: 'error'})
     }
@@ -53,31 +46,24 @@ async function getOne(req: Request, res: Response){
 
 async function add(req: Request, res: Response){
     try{
-        const condena_con_mismo_orden_gravedad = await em.getConnection().execute(`select count(*) as cont from condena s where s.orden_de_gravedad = ? or s.nombre = ?;`, [req.body.sanitizedInput.orden_de_gravedad, req.body.sanitizedInput.nombre]);
-        console.log('antes del if')
-        if(condena_con_mismo_orden_gravedad[0].cont === 0){
-            const laCondena = em.create(Condena, req.body.sanitizedInput)
-            await em.flush()
-            res.status(201).json({message: 'condena creada'})
-        } else {
-            res.status(409).json({message: 'orden de gravedad concuerda con uno ya en existencia.'})
-        }
+        em.create(Condena, req.body)
+        await em.flush()
+        res.status(201).json({status:201, message: 'Condena Creada'})
     } catch (error: any) {
-        res.status(500).json({message : error}) 
+        res.status(500).json({status:500, message : error}) 
     }
 }
 
 async function modificar(req: Request, res: Response) {
     try{
-        console.log("hellos")
         const cod_condena = Number(req.params.cod_condena)
-        const laCondena = await em.findOne(Condena, { cod_condena:cod_condena })
-        console.log(laCondena)
-        if(laCondena !== null){
-            laCondena.modificarPena(req.body)
-            em.assign(laCondena,req.body)
+        const condena = await em.findOne(Condena,
+             { cod_condena:cod_condena },{ populate: ['pena'] } )
+        if(condena !== null && condena.pena !== undefined){
+            const pena = condena.pena
+            condena.modificarPena(req.body,pena.fecha_fin_estimada)
+            em.assign(condena,req.body)
             await em.flush()
-            console.log(laCondena)
             res.status(200).json({message: "Condena Modificada"})
         } else {
             res.status(404).json({message: 'condena no encontrada'})
@@ -87,4 +73,4 @@ async function modificar(req: Request, res: Response) {
     }
 }
 
-export { getAll, getSome, getOne, add, modificar, sanitizarInputDeCondena }
+export { getAll, getOne, add, modificar, sanitizarInputDeCondena }

@@ -9,7 +9,7 @@ const SECRET_KEY = process.env.SECRET_KEY as string
 export function verificarToken(req:Request,res:Response,next:NextFunction){
     try{
         const token = req.header('Authorization')?.replace('Bearer ', '').trim().replace(/^"|"$/g, '');
-        if(!token){
+        if(!token || token === "null"){
             console.log(token)
             console.log('404 Token no Encontrado')
             res.status(404).json({message:"Token No Encontrado"})

@@ -3,7 +3,6 @@ import 'reflect-metadata'
 import supertest, { Request } from "supertest";
 import request from 'supertest';
 import dotenv from 'dotenv';
-import { app } from './app_test.js';
 
 dotenv.config()
 

@@ -1,5 +1,5 @@
 import 'reflect-metadata'; 
-import { Entity, PrimaryKey, Property, ManyToMany, Cascade, OneToMany, OneToOne } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property, ManyToMany, OneToMany, OneToOne } from "@mikro-orm/core";
 import { Actividad } from "../actividad/actividad.entity.js";
 import { Taller } from "../taller/taller.entity.js";
 import { ActividadIlegal } from "../actividadIlegalDir/actividadIlegal.entity.js";
@@ -38,8 +38,8 @@ export class Recluso {
     @ManyToMany(() => Actividad, (actividad) => actividad.reclusos, {eager: true,owner:true}) //, cascade: [Cascade.ALL], owner: false
     actividades: Actividad[] = [];
     
-    @OneToOne(()=>Pena,{eager:true})
-    pena!:Pena;
+    @OneToMany(()=>Pena,pena =>pena.recluso,{eager:true})
+    penas: Pena[] = [];
     
 
     // METODOS
@@ -53,18 +53,20 @@ export class Recluso {
     dias+=condena.duracion_dias
 
   })
-      if(!this.pena){
-        this.pena = new Pena()
+
+        let pena:Pena
+        pena = new Pena()
         const fecha_ini = new Date()
-        this.pena.fecha_ini = new Date()
-        this.pena.fecha_fin_estimada = fecha_ini
-        this.pena.fecha_fin_estimada.setFullYear(this.pena.fecha_fin_estimada.getFullYear() + anios);
-        this.pena.fecha_fin_estimada.setMonth(this.pena.fecha_fin_estimada.getMonth() + meses);
-        this.pena.fecha_fin_estimada.setDate(this.pena.fecha_fin_estimada.getDate() + dias);
+        pena.fecha_ini = new Date()
+        pena.fecha_fin_estimada = fecha_ini
+        pena.fecha_fin_estimada.setFullYear(pena.fecha_fin_estimada.getFullYear() + anios);
+        pena.fecha_fin_estimada.setMonth(pena.fecha_fin_estimada.getMonth() + meses);
+        pena.fecha_fin_estimada.setDate(pena.fecha_fin_estimada.getDate() + dias);
+        this.penas.push(pena)
         condenas.forEach((condena)=>{
-          condena.pena = this.pena
+          condena.pena = pena
         })
-      }  
+      
   }
 
 }

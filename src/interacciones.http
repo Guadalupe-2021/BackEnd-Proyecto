@@ -70,7 +70,8 @@ GET http://localhost:8080/reclusos
 //GET http://localhost:8080/reclusos/11111111
 
 GET http://localhost:8080/reclusos/1
-
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub21icmUiOiJqdWFuIiwiZXNwZWNpYWwiOnRydWUsImFwZWxsaWRvIjoiR2FyY2lhIiwiZG5pIjozMjQ1NDMyMzQsImZlY2hhSW5pQ29udHJhdG8iOiIyMDI2LTAzLTA2VDE5OjM3OjUxLjAwMFoiLCJmZWNoYUZpbkNvbnRyYXRvIjpudWxsLCJjb250cmFzZW5pYSI6ImhvbGEiLCJjb2RfYWRtaW5pc3RyYWRvciI6MSwiaWF0IjoxNzcyODYzODQ5fQ.vTLFcRSIA_LTlzZv_F5-jscU50oUm6J4r5v3YiZy5aA
 
 ### POST a recluso
 POST http://localhost:8080/reclusos

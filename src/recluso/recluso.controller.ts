@@ -4,6 +4,7 @@ import { Recluso } from "./recluso.entity.js"
 import { Condena } from "../condena/condena.entity.js"
 import { Actividad } from "../actividad/actividad.entity.js"
 import { Collection } from "@mikro-orm/core"
+import { Pena } from "../pena/pena.entity.js"
 
 const em = orm.em
 em.getRepository(Recluso)
@@ -26,6 +27,7 @@ function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction
 async function getAll(req:Request, res:Response){
     try{
         const reclusos = await em.find(Recluso, {})
+        console.log(reclusos)
         res.status(201).json(reclusos)
     } catch (error: any) {
         res.status(404).json({ status: 404 })
@@ -66,7 +68,7 @@ async function addReclusoConCondenas(req: Request, res: Response){
         const condenas = condenasData.map((condenaData: any) => orm.em.create(Condena, { ...condenaData, recluso }));
         recluso.asignarPena(condenas)
         recluso.condenas = condenas
-        console.log(condenas)
+
         await em.persistAndFlush(recluso)
          res.status(201).json({ status: 201, data: recluso.cod_recluso })
         }else{
@@ -126,14 +128,16 @@ async function liberarRecluso(req:Request,res:Response){
     const id = Number(req.params.id)
     try{
         const recluso = await em.findOne(Recluso,{cod_recluso:id})
-        console.log("recluso.pena: ",recluso?.pena)
         if(recluso!=null){
-            const pena_a_modificar = recluso.pena
-            pena_a_modificar.fecha_fin_real = new Date(req.body.pena.fecha_fin_real)
+            const pena_a_modificar = recluso.penas
+            req.body.penas[0].fecha_fin_real = new Date()
+            pena_a_modificar[0].fecha_fin_real = req.body.penas[0].fecha_fin_real
             console.log(pena_a_modificar)
             await em.persistAndFlush(pena_a_modificar)
             console.log("pena modificada y agregada")
             res.status(200).json({status:200, message:"Recluso Liberado"})
+        }else{
+            return res.status(404).json({status:404,message:"Not Found"})
         }
     }catch(error){
         console.log(error)
