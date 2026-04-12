@@ -51,7 +51,20 @@ async getAll(req:Request, res:Response){
         res.status(500).json({status: 500})
     }
 }
-
+async getAllDisponibles(req:Request, res:Response){
+    try{
+        const fecha = req.params.fecha
+        const allGuardias = await em.find(Guardia,{})
+        const guardias_ocupados = await em.find(Guardia,{ turnos:{fecha} })
+        console.log("Guardias oculados:",guardias_ocupados)
+        const id_ocupados = new Set( guardias_ocupados.map((g)=>g.cod_guardia) )
+        const guardias = allGuardias.filter((g)=>!id_ocupados.has(g.cod_guardia))
+        if(guardias!==null)res.status(200).json(guardias)
+        if(guardias===null)res.status(404).json({status:404, message:"Not Found"})
+    } catch (error: any) {
+        res.status(500).json({status: 500})
+    }
+}
 async getOne(req: Request, res: Response){
     try {
     if(!(req.params.id.indexOf(".")))throw Error

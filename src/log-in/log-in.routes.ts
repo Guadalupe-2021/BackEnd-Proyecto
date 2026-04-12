@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { logIn } from "./log-in.controller.js";
+import { input_sanitizer } from "./log-in.controller.js";
 
-//export const administradorRouter = Router()
 export const loginRouter = Router()
-loginRouter.post('/', logIn)
+loginRouter.post('/',input_sanitizer, logIn)
 
 
 
@@ -13,6 +13,7 @@ loginRouter.post('/', logIn)
 *   post:
 *     tags: [Log-in]
 *     summary: Solicitud de Login
+*     security: []
 *     requestBody:
 *       required: true
 *       content:
@@ -49,7 +50,7 @@ loginRouter.post('/', logIn)
 *                $ref: '#/components/schemas/ApiResponse'
 *              example:
 *                status: 401
-*                message: "Contraseña incorrecta"
+*                message: "Nombre de usuario o Contraseña incorrecta"
 */
 
 

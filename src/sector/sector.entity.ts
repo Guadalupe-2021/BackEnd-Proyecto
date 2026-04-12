@@ -1,6 +1,6 @@
-import { Entity, PrimaryKey, Property, ManyToMany, Cascade, OneToMany } from "@mikro-orm/core";
-import { Condena } from "../condena/condena.entity.js";
+import { Entity, PrimaryKey, Property, OneToMany, Collection } from "@mikro-orm/core";
 import { Actividad } from "../actividad/actividad.entity.js";
+import { Turno } from "../turno/turno.entity.js";
 
 @Entity()
 export class Sector {
@@ -15,6 +15,7 @@ export class Sector {
 
     @OneToMany(()=> Actividad ,(actividad)=>actividad.cod_sector)
     actividades:Actividad[]=[]
-    //@ManyToMany(() => Condena, (condena) => condena.sectores, { unique : false, nullable : false, cascade: [Cascade.ALL], owner: true})
-    //Condenas !: Condena[]
+
+    @OneToMany(() => Turno,(turno)=>turno.sector)
+    turnos = new Collection<Turno>(this);
 }

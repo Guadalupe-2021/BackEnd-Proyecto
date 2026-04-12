@@ -14,7 +14,7 @@ function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction
         nombre: req.body.nombre,
         apellido: req.body.apellido,
         dni: req.body.dni,
-        fecha_nac: req.body.fecha_nac
+        fecha_nac: new Date(req.body.fecha_nac)
     }
     Object.keys(req.body.sanitizedInput).forEach((key) => {
         if(req.body.sanitizedInput[key] === undefined){
@@ -60,7 +60,15 @@ async function getOne(req: Request, res: Response){
 }
 
 async function addReclusoConCondenas(req: Request, res: Response){
-    const {reclusoData,condenasData}= req.body
+    const {reclusoData,condenasData} = req.body
+    const [today,fecha_nac] = [new Date(), new Date(reclusoData.fecha_nac)]
+    let edad = (today.getFullYear() - fecha_nac.getFullYear())
+    if(today.getMonth() < fecha_nac.getMonth() ||
+     (today.getMonth() === fecha_nac.getMonth() && today.getDay() < fecha_nac.getDay()) ){
+        edad = edad - 1
+    }
+    if (edad < 16) return res.status(403).json({status: 403, message: "ERROR: Menor de edad"})
+    
     try{
         const elRecluso = await em.findOne(Recluso,{dni:reclusoData.dni})
     if(elRecluso===null){
@@ -100,22 +108,26 @@ async function inscripcionActividad(req:Request,res:Response){
     try{
         const recluso = await em.findOne(Recluso,{cod_recluso: Number(req.params.id)})
         const {actividad_data,eliminar}=req.body
-        console.log(req.body)
-        console.log(actividad_data)
-        const actividad = await em.findOne(Actividad,{cod_actividad:actividad_data.cod_actividad})
+        const actividad = await em.findOne(Actividad,{cod_actividad:actividad_data.cod_actividad},
+            {populate: ['reclusos']}
+        )
 
-        if(recluso!=null && actividad!=null){
+      if(recluso!=null && actividad!=null){
+         if(!eliminar){
+            if(actividad.reclusos != undefined &&
+            actividad.reclusos.length >= actividad.cant_cupos){
+                return res.status(409).json({status:409, message: "No hay mas cupos disponibles"})
+            }
 
-            if(!eliminar){     
             //@ts-expect-error
-            recluso.actividades.add(actividad)  // mikro orm lo ve como una collection y typescript como un array :(
+            recluso.actividades.add(actividad)  // mikro orm lo ve como una collection y typescript como un array :(        
+            res.status(200).json({status:200, message:"Recluso Inscripto"})
             }else{
             //@ts-expect-error
-            recluso.actividades.remove(actividad)  
+            recluso.actividades.remove(actividad)
+            res.status(200).json({status:200, message:"Inscripcion Eliminada"})
             }
             await em.flush()
-            console.log('actividad_agregada')
-            res.status(200).json({status:200, message:"Recluso Inscripto"})
         }
         if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
     }catch(error){

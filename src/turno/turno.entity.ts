@@ -1,26 +1,27 @@
-import { Entity, ManyToOne, Property, Rel, PrimaryKeyProp, PrimaryKey, ManyToMany, Cascade } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property, Rel, PrimaryKeyProp, PrimaryKey, ManyToMany, Cascade, Collection, Unique } from "@mikro-orm/core";
 import { Guardia } from "../guardia/guardia.entity.js";
 import { Sector } from "../sector/sector.entity.js";
 
 
 @Entity()
+@Unique({ properties: ['fecha', 'tipo_turno', 'guardia', 'sector'] } )
 export class Turno {
-    @ManyToOne(() => Guardia, { primary: true, nullable: false })
-    cod_guardia !: Rel<Guardia>
+    @PrimaryKey({ nullable: false, unique: true})
+    cod_turno ?: number ;
 
-    @ManyToOne(() => Sector, { primary: true, nullable: false })
-    cod_sector !: Rel<Sector>
+    @Property({ type : 'date'}) // yyyy-MM-dd
+    fecha !: string
 
-    @Property({ nullable: false, primary: true})
-    turno !: string
+    @Property({ columnType: 'char(1)' }) // [M|T|N] Mañana, Tarde o Noche
+    tipo_turno !: 'M' | 'T' | 'N';
 
-    @PrimaryKey({primary : true, unique : false, nullable : false})
-    fecha_ini !: Date
+    @ManyToOne(() => Guardia)
+    guardia !: Rel<Guardia>;
 
-    @Property({unique : false, nullable : true, primary : false}) 
-    fecha_fin !: Date
+    @ManyToOne(() => Sector, {nullable: false })
+    sector !: Rel<Sector>
 
-    [PrimaryKeyProp] !: ['cod_sector', 'cod_guardia', 'fecha_ini', 'turno'];
 }
 
+// Para una fecha determinada se crean 3 turnos Mañana, Tarde y Noche
 

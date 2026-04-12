@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getAll, getOne, getCeldas, agregar_sentencia_a_sector, getTurnos } from "./sector.controller.js";
+import { getAll, getOne, getCeldas, agregar_sentencia_a_sector, getTurnos, getSectoresXTurnoByDate } from "./sector.controller.js";
 
 export const sectorRouter = Router()
 
 sectorRouter.get('/', getAll)
+sectorRouter.get('/:fecha', getSectoresXTurnoByDate)
 sectorRouter.get('/:cod_sector', getOne)
 sectorRouter.get('/:cod_sector/celdas', getCeldas)
 sectorRouter.get('/:cod_sector/turnos', getTurnos)

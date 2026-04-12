@@ -14,6 +14,22 @@ async function getAll(req:Request, res:Response){
     }
 }
 
+async function getSectoresXTurnoByDate(req:Request,res:Response){
+    try{
+        const sectores = await em
+        .createQueryBuilder(Sector, 's')
+        .leftJoinAndSelect(
+            's.turnos', 't',{ fecha: req.params.fecha } )
+        .leftJoinAndSelect('t.guardia', 'g')
+        .getResult();
+        res.status(201).json(sectores)
+    }catch(e){
+        console.log(e)
+        res.status(500).json({ status: 500, message:e})
+    }
+}
+
+
 async function getSome(req : Request, res : Response){
     try{
         const sectores = await em.find(Sector, { nombre: '%req.params.nombreParcial%'})
@@ -78,4 +94,4 @@ async function agregar_sentencia_a_sector(req : Request, res : Response){
 }
 
 
-export { getAll, getSome, getOne, getCeldas, getTurnos, agregar_sentencia_a_sector }
+export { getAll, getSome, getOne, getCeldas, getTurnos, agregar_sentencia_a_sector, getSectoresXTurnoByDate }

@@ -5,7 +5,7 @@ import { isSpecialAdmin } from "../shared/verification/tokenVeryfication.js";
 export const reclusoRouter = Router()
 
 reclusoRouter.get('/', getAll)
-reclusoRouter.post('/', addReclusoConCondenas)
+reclusoRouter.post('/',sanitizarInputDeRecluso, addReclusoConCondenas)
 reclusoRouter.get('/:id', getOne)
 reclusoRouter.put('/:id', putRecluso)
 reclusoRouter.put('/:id/inscripcion', inscripcionActividad)
@@ -69,6 +69,15 @@ reclusoRouter.put('/:id/liberar', isSpecialAdmin,liberarRecluso)
 *              example:
 *                status: 200
 *                data: 1
+*       403:
+*          description: "Prohibido el ingreso de menores de edad"
+*          content:
+*            application/json:
+*              schema:
+*                $ref: '#/components/schemas/ApiResponse'
+*              example:
+*                status: 403
+*                message: ""ERROR: Menor de edad""
 *       409:
 *          description: "Recluso con ese dni ya existe"
 *          content:
@@ -220,6 +229,15 @@ reclusoRouter.put('/:id/liberar', isSpecialAdmin,liberarRecluso)
 *              example:
 *                status: 404
 *                message: "ERROR: Recluso no encontrado"
+*       409:
+*          description: "Sin cupos"
+*          content:
+*            application/json:
+*              schema:
+*                $ref: '#/components/schemas/ApiResponse'
+*              example:
+*                status: 409
+*                message: "No hay mas cupos disponibles"
 *       500:
 *         description: "Error Inesperado"
 *         content:
