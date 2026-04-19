@@ -54,9 +54,9 @@ async getAll(req:Request, res:Response){
 async getAllDisponibles(req:Request, res:Response){
     try{
         const fecha = req.params.fecha
-        const allGuardias = await em.find(Guardia,{})
+        const allGuardias = await em.find(Guardia,{fecha_fin_contrato:null})
         const guardias_ocupados = await em.find(Guardia,{ turnos:{fecha} })
-        console.log("Guardias oculados:",guardias_ocupados)
+
         const id_ocupados = new Set( guardias_ocupados.map((g)=>g.cod_guardia) )
         const guardias = allGuardias.filter((g)=>!id_ocupados.has(g.cod_guardia))
         if(guardias!==null)res.status(200).json(guardias)

@@ -26,8 +26,10 @@ function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction
 
 async function getAll(req:Request, res:Response){
     try{
-        const reclusos = await em.find(Recluso, {})
-        console.log(reclusos)
+        const reclusos = await em.find(Recluso, {
+            penas:{fecha_fin_real:null}
+        })
+        console.log("reclusos:",reclusos)
         res.status(201).json(reclusos)
     } catch (error: any) {
         res.status(404).json({ status: 404 })

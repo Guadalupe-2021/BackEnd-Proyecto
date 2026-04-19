@@ -8,9 +8,9 @@ em.getRepository(Sector)
 async function getAll(req:Request, res:Response){
     try{
         const sectores = await em.find(Sector, {})
-        res.status(201).json({ status: 201, data: sectores})
-    } catch (error: any) {
-        res.status(404).json({ status: 404})
+        res.status(201).json(sectores)
+    } catch (e:any) {
+        res.status(404).json({ status: 404, message:e.error})
     }
 }
 
@@ -29,7 +29,21 @@ async function getSectoresXTurnoByDate(req:Request,res:Response){
     }
 }
 
-
+async function add(req : Request, res : Response){
+    try{
+        const sector_duplicado = await em.findOne(Sector,req.body.cod_sector.toUpperCase())
+        if(sector_duplicado!=null){
+            res.status(409).json({status:409,
+                message:"Error. Ya existe sector con codigo seleccionado"})
+            return}
+        req.body.cod_sector = req.body.cod_sector.toUpperCase()
+        const sector = em.create(Sector,req.body)
+        await em.persist(sector).flush();
+        res.status(201).json({status:200, message:"Sector Guardado"})
+    }catch(error:any){
+        res.status(500).json({status:500, message:"Error inesperado. No se ha podido guardar el sector"})
+    }
+}
 async function getSome(req : Request, res : Response){
     try{
         const sectores = await em.find(Sector, { nombre: '%req.params.nombreParcial%'})
@@ -62,36 +76,33 @@ async function getCeldas(req: Request, res: Response){
     }
 }
 
-async function getTurnos(req: Request, res: Response){
-    try {
-        const cod_sector =  Number.parseInt(req.params.cod_sector) 
-       // const losTurnos:string = await em.getConnection().execute(`
-       //     select *
-       //     from turno
-        //    where cod_sector_cod_sector = ?;`, [cod_sector])
-        //res.status(201).json({ status: 201, data: losTurnos} )
-    } catch (error: any){
-        res.status(404).json({status: 404 })
-    }
-}
-
-async function agregar_sentencia_a_sector(req : Request, res : Response){
+async function modificar(req:Request,res:Response){
     try{
-        const cod_sector =  Number.parseInt(req.params.cod_sector)
-        Object.keys(req.body).forEach(async (key) => {
-            try {
-                const unaIns = await em.getConnection().execute(`
-                    insert into sector_sentencias (sector_cod_sector, sentencia_cod_sentencia) values (?, ?);`, [cod_sector, req.body[key]])
-                await em.flush()
-            } catch(error:any){
-                res.status(409).json( res.status(409) )
-            }
-        })
-        res.status(201).json({ status: 201, data: 'agregadas' })
-    } catch (error: any) {
-        res.status(404).json({ message: error.message})
+        const sector = await em.findOne(Sector,{cod_sector: req.params.cod_sector.toUpperCase()})
+        if(sector!=null){
+            em.assign(sector,req.body)
+            await em.flush()
+            res.status(200).json({status:200, message:"Sector Modificado"})
+        }
+        if(sector===null)res.status(404).json({sataus:404, message:"ERROR: Sector no encontrado"})
+    }catch{
+        res.status(500).json({sataus:500, message:"Error Inesperado"})
     }
 }
 
 
-export { getAll, getSome, getOne, getCeldas, getTurnos, agregar_sentencia_a_sector, getSectoresXTurnoByDate }
+
+async function deleteOne(req:Request, res:Response){
+    try{
+        const cod_sector = req.params.cod_sector
+        await em.nativeDelete(Sector,{cod_sector})
+        res.status(200).json({status:200, message:"Sector Eliminado"})
+    }catch(e){
+        console.log(e)
+        res.status(500).json({status:500, message:"Error Inesperado"})
+    }
+}
+
+
+
+export { getAll, getSome, getOne, getCeldas, deleteOne, add, modificar, getSectoresXTurnoByDate }
