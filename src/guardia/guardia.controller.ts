@@ -3,6 +3,7 @@ import { orm } from "../shared/db/orm.js"
 import { Guardia } from "./guardia.entity.js"
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import { Turno } from "../turno/turno.entity.js"
 
 
 dotenv.config()
@@ -107,7 +108,12 @@ async putGuardia(req: Request, res: Response){
     if(guardia!=null){
     em.assign(guardia, req.body)
     await em.flush()
-    console.log('guardia modificado')
+    if(guardia.fecha_fin_contrato){
+        await em.nativeDelete(Turno,{
+            guardia:guardia,
+            fecha: { $gte: guardia.fecha_fin_contrato.toISOString().split("T")[0] }
+        })
+    }
     res.status(200).json({status:200, message : "Guardia Modificado", data:guardia})
     }else{
         res.status(404).json({status:404, message:'Not Found'})
