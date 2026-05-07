@@ -1,30 +1,25 @@
 import { Request, Response, NextFunction } from "express"
 import { Actividad } from "./actividad.entity.js"
 import { orm } from "../shared/db/orm.js"
+import { valibot_actividad } from "./actividad.schema.js"
 
 const em = orm.em
 
-function sanitizarInputDeActividad(req : Request, res : Response, next: NextFunction){
-    req.body.sanitizedInput = {
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion,
-        locacion: req.body.locacion,
-        dia_de_la_semana: req.body.dia_de_la_semana,
-        hora_inicio: req.body.hora_inicio,
-        hora_fin: req.body.hora_fin,
-        estado: req.body.estado,
-        /*
-        cantidad_minima: req.body.cantidad_minima,
-        edad_minima: req.body.edad_minima,                     estos atributos no se pueden cambiar una vez declarados
-        cod_sector_cod_sector: req.body.cod_sector_cod_sector
-        */
+async function sanitizarInputDeActividad(req : Request, res : Response, next: NextFunction){
+  try{ 
+    const incoming = await valibot_actividad(req.body)
+    if (!incoming.success){
+        console.log("incomming issues: ")
+        console.log(incoming.issues)
+        return res.status(400).json({status:400, message: incoming.issues[0].message})
     }
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-      if (req.body[key] === undefined) {
-        delete req.body[key]
-      }
-    })
+    req.body.sanitized_input = incoming.output
     next()
+
+  }catch(error){
+    console.log(error)
+    return res.status(500).json({status:500, message: "Error Inesperado"})
+  }
 }
 
 async function getAll(req:Request, res:Response){
@@ -49,7 +44,8 @@ async function getOne(req: Request, res: Response){
 
 async function add(req: Request, res: Response){
     try{
-        const cant_act_per_day = await em.count(Actividad,{dia_de_la_semana: req.body.dia_de_la_semana})
+        const cant_act_per_day = await em.count(Actividad,
+            {dia_de_la_semana: req.body.sanitized_input.dia_de_la_semana})
         if(cant_act_per_day>=3){
        return res.status(409).json({status:409 ,message:'Excede la Cantidad Maxima de Actividades por Dia'})
         }
@@ -67,7 +63,8 @@ async function update(req: Request, res: Response) {
         const id_actividad = Number(req.params.cod_actividad)
         const actividad = await em.findOne(Actividad, {cod_actividad:id_actividad})
         if(actividad!=null) {
-            em.assign(actividad, req.body)
+            console.log(req.body.sanitized_input)
+            em.assign(actividad, req.body.sanitized_input)
             await em.flush()
             res.status(200).json({ message: 'Actividad Modificada'})
         } else {

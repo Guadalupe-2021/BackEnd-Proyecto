@@ -14,9 +14,7 @@ import { sectorRouter } from '../src/sector/sector.routes.js'
 import { administradorRouter } from '../src/administrador/administrador.routes.js'
 import { penaRouter } from '../src/pena/pena.routes.js'
 import { reclusoRouter } from '../src/recluso/recluso.routes.js'
-import { tallerRouter } from '../src/taller/taller.routes.js'
 import { turnoRouter } from '../src/turno/turno.routes.js'
-import { actividadIlegalRouter } from '../src/actividadIlegalDir/actividadIlegal.routes.js'
 import { verificarToken } from '../src/shared/verification/tokenVeryfication.js'
 import { initORM } from '../src/shared/db/orm.db.js'
 import { config, config_test } from '../src/shared/db/orm.config.js'
@@ -52,13 +50,11 @@ app.use('/end-testing', (req, res, next)=>{
 app.use('/administradores', administradorRouter)
 app.use(verificarToken)
 app.use('/actividades', actividadRouter)
-app.use('/actividadesIlegales', actividadIlegalRouter)
 app.use('/guardias', guardiaRouter)
 app.use('/penas', penaRouter)
 app.use('/sectores', sectorRouter)
 app.use('/reclusos', reclusoRouter)
 app.use('/condenas', condenaRouter)
-app.use('/talleres', tallerRouter)
 app.use('/sectores', sectorRouter)
 app.use('/celdas', celdaRouter)
 app.use('/turnos', turnoRouter)

@@ -242,4 +242,90 @@
  *       required:
  *         - fecha_ini
  *         - cod_recluso
+ * 
+ *     Turno:
+ *       type: object
+ *       required:
+ *         - fecha
+ *         - tipo_turno
+ *         - cod_sector
+ *         - cod_guardia
+ *       properties:
+ *         fecha:
+ *           type: string
+ *           description: Fecha del turno
+ *           example: 2026-05-05
+ *         tipo_turno:
+ *           type: string
+ *           description: Tipo de turno (M-Mañana, T-Tarde, N-Noche)
+ *           example: M
+ *         cod_sector:
+ *           type: string
+ *           description: Código del sector en el que transcurre el turno
+ *           example: AA
+ *         cod_guardia:
+ *           type: integer
+ *           description: Código del guardia que asiste al turno
+ *           example: 1990-05-20
+ * 
+ *     TurnosBatch:
+ *       type: object
+ *       required:
+ *         - dias
+ *         - tipo_turno
+ *         - cod_sectores
+ *         - cod_guardias
+ *       properties:
+ *         dias:
+ *           type: array
+ *           description: Fechas de los turnos
+ *           items:
+ *             type: number
+ *             example: 1
+ *         tipo_turno:
+ *           type: string
+ *           enum: [M, T, N]
+ *           description: Tipo de turno (M-Mañana, T-Tarde, N-Noche)
+ *           example: M
+ *         cod_sector:
+ *           description: Sectores donde transcurren los turnos
+ *           items:
+ *             type: string
+ *             maxLength: 2
+ *             example: AA
+ *         cod_guardia:
+ *           type: array
+ *           description: Guardias asignados a los turnos
+ *           items:
+ *             type: integer
+ *             example: 15
+ * 
+ * 
+ *     Sector:
+ *       type: object
+ *       required:
+ *         - cod_sector
+ *         - nombre
+ *         - descripcion
+ *       properties:
+ *         cod_sector:
+ *           type: string
+ *           maxLength: 2
+ *           pattern: '^[A-Z]{1,2}$'
+ *           description: Código único del sector
+ *           example: AA
+ *
+ *         nombre:
+ *           type: string
+ *           maxLength: 100
+ *           pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$'
+ *           description: Nombre del sector
+ *           example: Patio Norte 1
+ *
+ *         descripcion:
+ *           type: string
+ *           maxLength: 500
+ *           description: Descripción del sector
+ *           example: Sector destinado a recreación
+ *
  */

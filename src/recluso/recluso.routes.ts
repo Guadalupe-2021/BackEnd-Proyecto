@@ -54,7 +54,7 @@ reclusoRouter.put('/:id/liberar', isSpecialAdmin,liberarRecluso)
 *            schema:
 *              $ref: '#/components/schemas/ReclusoCondenas'
 *     responses:
-*       200:
+*       201:
 *         description: Alta recluso
 *         content:
 *           application/json:
@@ -67,7 +67,7 @@ reclusoRouter.put('/:id/liberar', isSpecialAdmin,liberarRecluso)
 *                        type: integer
 *                        description: codigo del recluso
 *              example:
-*                status: 200
+*                status: 201
 *                data: 1
 *       403:
 *          description: "Prohibido el ingreso de menores de edad"
@@ -77,7 +77,7 @@ reclusoRouter.put('/:id/liberar', isSpecialAdmin,liberarRecluso)
 *                $ref: '#/components/schemas/ApiResponse'
 *              example:
 *                status: 403
-*                message: ""ERROR: Menor de edad""
+*                message: "ERROR: Menor de edad"
 *       409:
 *          description: "Recluso con ese dni ya existe"
 *          content:

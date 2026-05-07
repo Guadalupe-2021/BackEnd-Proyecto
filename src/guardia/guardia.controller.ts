@@ -4,7 +4,7 @@ import { Guardia } from "./guardia.entity.js"
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { Turno } from "../turno/turno.entity.js"
-
+import { valibot_guardia } from "./guardia.schema.js"
 
 dotenv.config()
 
@@ -12,32 +12,20 @@ const em = orm.em
 em.getRepository(Guardia)
 
 async function guardiaSanitizer(req:Request,res:Response,next:NextFunction){
-    console.log("en el guardia sanitizer",req.body)
-    try{
-req.body.sanitizedInputGuardia = {
-     nombre: req.body.nombre,
-     apellido: req.body.apellido,
-     dni: req.body.dni,
-     fecha_ini_contrato: new Date(req.body.fecha_ini_contrato),
-     fecha_fin_contrato: new Date(req.body.fecha_fin_contrato),
-     }
-    console.log("guardia sanitizer realizado con exito",req.body.sanitizedInputGuardia)
-     
-    //more checks here
-     //Number(req.body.dni)
-     //new Date(req.body.fecha_ini_contrato)
-     //new Date(req.body.fecha_fin_contrato)
+  try{ 
+    const incoming = await valibot_guardia(req.body)
+    if (!incoming.success){
+        console.log("incomming issues: ")
+        console.log(incoming.issues)
+        return res.status(400).json({status:400, message: incoming.issues[0].message})
+    }
+    req.body.sanitized_input = incoming.output
+    next()
 
-
-  //Object.keys(req.body.sanitizedInput).forEach((key) => {
-  //  if (req.body.sanitizedInput[key] === undefined) {
-  //    delete req.body.sanitizedInput[key]
-  //  }
-  //})
   }catch(error){
     console.log(error)
+    return res.status(500).json({status:500, message: "Error Inesperado"})
   }
-  next()
 }
 
 
@@ -63,7 +51,7 @@ async getAllDisponibles(req:Request, res:Response){
         if(guardias!==null)res.status(200).json(guardias)
         if(guardias===null)res.status(404).json({status:404, message:"Not Found"})
     } catch (error: any) {
-        res.status(500).json({status: 500})
+        res.status(500).json({status: 500, message:"Error Inesperado"})
     }
 }
 async getOne(req: Request, res: Response){
@@ -85,9 +73,9 @@ const guardia = (id_guardia>9999999) ? await em.findOne(Guardia, {dni:id_guardia
 
 async addOne(req: Request, res: Response){
     try{
-        const guardia = await em.findOne(Guardia, {dni:req.body.dni});
+        const guardia = await em.findOne(Guardia, {dni:req.body.sanitized_input.dni});
         if(guardia === null){
-            em.create(Guardia, req.body) 
+            em.create(Guardia, req.body.sanitized_input) 
             await em.flush()
             res.status(201).json({ status: 201 })
         } else {
@@ -102,13 +90,11 @@ async addOne(req: Request, res: Response){
 async putGuardia(req: Request, res: Response){
     try {
     const codGuardia = Number.parseInt(req.params.id)
-    //const codGuardia = req.body.cod_guardia
-    console.log('Look For Guardia')
     const guardia = await em.findOne(Guardia,{cod_guardia: codGuardia})
     if(guardia!=null){
-    em.assign(guardia, req.body)
-    await em.flush()
-    if(guardia.fecha_fin_contrato){
+      em.assign(guardia, req.body.sanitized_input)
+      await em.flush()
+      if(guardia.fecha_fin_contrato){
         await em.nativeDelete(Turno,{
             guardia:guardia,
             fecha: { $gte: guardia.fecha_fin_contrato.toISOString().split("T")[0] }

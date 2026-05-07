@@ -6,7 +6,7 @@ export const condenaRouter = Router()
 condenaRouter.get('/', getAll)
 condenaRouter.get('/:cod_condena', getOne)
 condenaRouter.post('/', sanitizarInputDeCondena, add)
-condenaRouter.put('/:cod_condena', modificar)
+condenaRouter.put('/:cod_condena',sanitizarInputDeCondena , modificar)
 
 
 /**

@@ -2,25 +2,26 @@ import { Request, Response, NextFunction } from "express"
 import { orm } from "../shared/db/orm.js"
 import { Condena } from "./condena.entity.js"
 import { Pena } from "../pena/pena.entity.js"
+import { valibot_condena } from "./condena.schema.js"
 
 const em = orm.em
 em.getRepository(Condena)
 
-function sanitizarInputDeCondena(req : Request, res : Response, next: NextFunction){
-    req.body.sanitizedInput = {
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion, 
-        duracion_anios: req.body.duracion_anios,
-        duracion_meses: req.body.duracion_meses,
-        duracion_dias: req.body.duracion_dias,
-        orden_de_gravedad: req.body.orden_de_gravedad
+async function sanitizarInputDeCondena(req : Request, res : Response, next: NextFunction){
+  try{ 
+    const incoming = await valibot_condena(req.body)
+    if (!incoming.success){
+        console.log("incomming issues: ")
+        console.log(incoming.issues)
+        return res.status(400).json({status:400, message: incoming.issues[0].message})
     }
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if (req.body.sanitizedInput[key] === undefined) {
-            delete req.body.sanitizedInput[key]
-        }
-    })
+    req.body.sanitized_input = incoming.output
     next()
+
+  }catch(error){
+    console.log(error)
+    return res.status(500).json({status:500, message: "Error Inesperado"})
+  }
 }
 
 async function getAll(req : Request, res : Response){
@@ -46,7 +47,7 @@ async function getOne(req: Request, res: Response){
 
 async function add(req: Request, res: Response){
     try{
-        em.create(Condena, req.body)
+        em.create(Condena, req.body.sanitized_input)
         await em.flush()
         res.status(201).json({status:201, message: 'Condena Creada'})
     } catch (error: any) {
@@ -61,8 +62,8 @@ async function modificar(req: Request, res: Response) {
              { cod_condena:cod_condena },{ populate: ['pena'] } )
         if(condena !== null && condena.pena !== undefined){
             const pena = condena.pena
-            condena.modificarPena(req.body,pena.fecha_fin_estimada)
-            em.assign(condena,req.body)
+            condena.modificarPena(req.body.sanitized_input,pena.fecha_fin_estimada)
+            em.assign(condena,req.body.sanitized_input)
             await em.flush()
             res.status(200).json({message: "Condena Modificada"})
         } else {

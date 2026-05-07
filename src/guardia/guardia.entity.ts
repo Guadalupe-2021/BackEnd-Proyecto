@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { Turno } from "../turno/turno.entity.js";
 
 @Entity()

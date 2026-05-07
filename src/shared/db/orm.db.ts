@@ -6,7 +6,6 @@ import { Celda } from '../../celda/celda.entity.js';
 import { Condena } from '../../condena/condena.entity.js';
 import { Recluso } from '../../recluso/recluso.entity.js';
 import { Sector } from '../../sector/sector.entity.js';
-import { Taller } from '../../taller/taller.entity.js';
 import { Turno } from '../../turno/turno.entity.js';
 
 export interface Services {
@@ -19,7 +18,6 @@ export interface Services {
   pena: EntityRepository<Pena>;
   recluso: EntityRepository<Recluso>;
   sector: EntityRepository<Sector>;
-  taller: EntityRepository<Taller>;
   turno: EntityRepository<Turno>;
 }
 
@@ -43,7 +41,6 @@ export async function initORM(options?: Options): Promise<Services> {
     pena: orm.em.getRepository(Pena),
     recluso: orm.em.getRepository(Recluso),
     sector: orm.em.getRepository(Sector),
-    taller: orm.em.getRepository(Taller),
     turno: orm.em.getRepository(Turno),
   };
 }

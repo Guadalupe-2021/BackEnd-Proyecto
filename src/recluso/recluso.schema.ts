@@ -1,7 +1,7 @@
 import * as v from 'valibot';
 
-export const guardiaSchema = v.object({
-  cod_guardia: v.optional(v.number()),
+export const reclusoSchema = v.object({
+  cod_recluso: v.optional(v.number()),
 
   nombre: v.pipe(
     v.string(),
@@ -22,20 +22,13 @@ export const guardiaSchema = v.object({
     v.minValue(10000000, 'DNI inválido')
   ),
 
-  fecha_ini_contrato: v.pipe(
+  fecha_nac: v.pipe(
     v.union([v.string(), v.date()]),
     v.transform((value) => new Date(value)),
     v.check((date) => !isNaN(date.getTime()), 'Fecha inválida')
   ),
 
-  fecha_fin_contrato: v.optional(
-    v.pipe(
-      v.union([v.string(), v.date()]),
-      v.transform((value) => new Date(value)),
-      v.check((date) => !isNaN(date.getTime()), 'Fecha inválida')
-    )
-  ),
 });
 
 
-export const valibot_guardia = v.safeParserAsync(guardiaSchema)
+export const valibot_recluso = v.safeParserAsync(reclusoSchema)

@@ -15,7 +15,7 @@ export class Actividad {
 
 
     @Property({ nullable: false})
-    dia_de_la_semana !: string  // no vamos a guardar el nombre del dia de la semana, hay que transformarlo siempre y no tiene sentido. pero si vamos a mantener el numero
+    dia_de_la_semana !: string
     
     @Property({ nullable: false})
     hora_inicio !: string

@@ -14,9 +14,7 @@ import { sectorRouter } from './sector/sector.routes.js'
 import { administradorRouter } from './administrador/administrador.routes.js'
 import { penaRouter } from './pena/pena.routes.js'
 import { reclusoRouter } from './recluso/recluso.routes.js'
-import { tallerRouter } from './taller/taller.routes.js'
 import { turnoRouter } from './turno/turno.routes.js'
-import { actividadIlegalRouter } from './actividadIlegalDir/actividadIlegal.routes.js'
 import { logIn } from './log-in/log-in.controller.js'
 import { verificarToken } from './shared/verification/tokenVeryfication.js'
 
@@ -47,13 +45,11 @@ app.use('/log-in',loginRouter)
 app.use('/administradores', administradorRouter)
 app.use(verificarToken)
 app.use('/actividades', actividadRouter)
-app.use('/actividadesIlegales', actividadIlegalRouter)
 app.use('/guardias', guardiaRouter)
 app.use('/penas', penaRouter)
 app.use('/sectores', sectorRouter)
 app.use('/reclusos', reclusoRouter)
 app.use('/condenas', condenaRouter)
-app.use('/talleres', tallerRouter)
 app.use('/sectores', sectorRouter)
 app.use('/celdas', celdaRouter)
 app.use('/turnos', turnoRouter)

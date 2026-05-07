@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { guardia_Service,guardiaSanitizer} from "./guardia.controller.js";
+import { isSpecialAdmin } from "../shared/verification/tokenVeryfication.js";
 export const guardiaRouter = Router()
 
 guardiaRouter.get('/', guardia_Service.prototype.getAll)
@@ -7,6 +8,9 @@ guardiaRouter.get('/turnos/:fecha', guardia_Service.prototype.getAllDisponibles)
 guardiaRouter.get('/:id', guardia_Service.prototype.getOne)
 guardiaRouter.post('/',guardiaSanitizer ,guardia_Service.prototype.addOne)
 guardiaRouter.put('/:id',guardiaSanitizer ,guardia_Service.prototype.putGuardia)
+guardiaRouter.put('/:id/finalizar_contrato',isSpecialAdmin,guardiaSanitizer
+   ,guardia_Service.prototype.putGuardia)
+
 
 
 /**
@@ -151,6 +155,45 @@ guardiaRouter.put('/:id',guardiaSanitizer ,guardia_Service.prototype.putGuardia)
 *       '500':
 *          description: Error Inesperado
 *          content:
+*            application/json:
+*              schema:
+*                $ref: '#/components/schemas/ApiResponse'
+*              example:
+*                status: 500
+*                message: "Error Inesperado"
+* 
+* /guardias/turnos/{fecha}:
+*   get:
+*     tags: [Guardia]
+*     summary: Get all guardias sin turnos en fecha y sin contratos finaizados
+*     parameters:
+*       - in: path
+*         name: fecha
+*         required: true
+*         schema:
+*           type: string
+*         description: Fecha de turno
+*     responses:
+*       200:
+*         description: Array de Guardias
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 $ref: '#/components/schemas/Guardia'
+*       404:
+*          description: "Not Found"
+*          content:
+*            application/json:
+*              schema:
+*                $ref: '#/components/schemas/ApiResponse'
+*              example:
+*                status: 404
+*                message: "Guardia not found"
+*       500:
+*         description: "Error Inesperado"
+*         content:
 *            application/json:
 *              schema:
 *                $ref: '#/components/schemas/ApiResponse'

@@ -3,25 +3,26 @@ import { orm } from "../shared/db/orm.js"
 import { Recluso } from "./recluso.entity.js"
 import { Condena } from "../condena/condena.entity.js"
 import { Actividad } from "../actividad/actividad.entity.js"
-import { Collection } from "@mikro-orm/core"
-import { Pena } from "../pena/pena.entity.js"
+import { valibot_recluso } from "./recluso.schema.js"
 
 const em = orm.em
 em.getRepository(Recluso)
 
-function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction){
-    req.body.sanitizedInput = {
-        nombre: req.body.nombre,
-        apellido: req.body.apellido,
-        dni: req.body.dni,
-        fecha_nac: new Date(req.body.fecha_nac)
+async function sanitizarInputDeRecluso(req: Request, res: Response, next: NextFunction){
+  try{ 
+    const incoming = await valibot_recluso(req.body.reclusoData ?? req.body)
+    if (!incoming.success){
+        console.log("incomming issues: ")
+        console.log(incoming.issues)
+        return res.status(400).json({status:400, message: incoming.issues[0].message})
     }
-    Object.keys(req.body.sanitizedInput).forEach((key) => {
-        if(req.body.sanitizedInput[key] === undefined){
-            delete req.body.sanitizedInput[key]
-        }
-    })
+    req.body.sanitized_input = incoming.output
     next()
+
+  }catch(error){
+    console.log(error)
+    return res.status(500).json({status:500, message: "Error Inesperado"})
+  }
 }
 
 async function getAll(req:Request, res:Response){
@@ -92,16 +93,14 @@ async function addReclusoConCondenas(req: Request, res: Response){
 async function putRecluso(req:Request,res:Response){
     try{
         const recluso = await em.findOne(Recluso,{cod_recluso: Number(req.params.id)})
-        console.log(recluso)
         if(recluso!=null){
-            req.body.dni = req.body.dni.toString()  //parece que en el assign se genra conflicto con el tipo de dato
-            em.assign(recluso,req.body)
+            em.assign(recluso,req.body.sanitized_input)
             await em.flush()
             res.status(200).json({status:200, message:"Recluso Modificado"})
         }
-        if(recluso===null)res.status(404).json({sataus:404, message:"ERROR: Recluso no encontrado"})
+        if(recluso===null)res.status(404).json({status:404, message:"ERROR: Recluso no encontrado"})
     }catch{
-        res.status(500).json({sataus:500, message:"Error Inesperado"})
+        res.status(500).json({status:500, message:"Error Inesperado"})
     }
 }
 
